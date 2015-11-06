@@ -107,6 +107,7 @@ BITCOIN_CORE_H = \
   coins.h \
   compat.h \
   compat/sanity.h \
+  consensus/merkle.h \
   compressor.h \
   primitives/block.h \
   primitives/transaction.h \
@@ -309,6 +310,7 @@ libbitcoin_common_a_SOURCES = \
   chainparams.cpp \
   coins.cpp \
   compressor.cpp \
+  consensus/merkle.cpp \
   primitives/block.cpp \
   primitives/transaction.cpp \
   core_read.cpp \
@@ -466,6 +468,7 @@ CLEANFILES += *.gcda *.gcno
 CLEANFILES += compat/*.gcda compat/*.gcno
 CLEANFILES += crypto/*.gcda crypto/*.gcno
 CLEANFILES += primitives/*.gcda primitives/*.gcno
+CLEANFILES += consensus/*.gcda consensus/*.gcno
 CLEANFILES += script/*.gcda script/*.gcno
 CLEANFILES += univalue/*.gcda univalue/*.gcno
 CLEANFILES += zmq/*.gcda zmq/*.gcno

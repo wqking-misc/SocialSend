@@ -45,7 +45,7 @@ using namespace boost;
 #define SPORK_17_MN_NETCHECK 10016
 #define SPORK_18_MIN_AGE_STAKE_ENFORCEMENT 10017
 #define SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT 10018
-
+#define SPORK_17_SEGWIT_ACTIVATION 10016
 
 #define SPORK_2_SWIFTTX_DEFAULT 978307200                         //2001-1-1
 #define SPORK_3_SWIFTTX_BLOCK_FILTERING_DEFAULT 1424217600        //2015-2-18
@@ -63,6 +63,7 @@ using namespace boost;
                                                                   // Set this to zero to emulate classic behaviour
 #define SPORK_18_MIN_AGE_STAKE_ENFORCEMENT_DEFAULT 4070908800     //OFF
 #define SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT_DEFAULT 4070908800   //OFF
+#define SPORK_17_SEGWIT_ACTIVATION_DEFAULT 4070908800 //OFF
 
 class CSporkMessage;
 class CSporkManager;
