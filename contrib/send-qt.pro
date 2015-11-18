@@ -135,6 +135,7 @@ HEADERS += src/activemasternode.h \
            src/validationinterface.h \
            src/compat/sanity.h \
            src/consensus/merkle.h \
+           src/consensus/validation.h \
            src/config/send-config.h \
            src/crypto/common.h \
            src/crypto/hmac_sha256.h \
