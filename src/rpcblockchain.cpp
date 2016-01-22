@@ -94,7 +94,8 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     if (chainActive.Contains(blockindex))
         confirmations = chainActive.Height() - blockindex->nHeight + 1;
     result.push_back(Pair("confirmations", confirmations));
-    result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
+    result.push_back(Pair("strippedsize", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION)));
+    result.push_back(Pair("size", (int)::GetSerializeSize(block, SER_NETWORK, PROTOCOL_VERSION | SERIALIZE_TRANSACTION_WITNESS)));
     result.push_back(Pair("height", blockindex->nHeight));
     result.push_back(Pair("version", block.nVersion));
     result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
@@ -328,6 +329,8 @@ UniValue getblock(const UniValue& params, bool fHelp)
             "  \"difficulty\" : x.xxx,  (numeric) The difficulty\n"
             "  \"previousblockhash\" : \"hash\",  (string) The hash of the previous block\n"
             "  \"nextblockhash\" : \"hash\"       (string) The hash of the next block\n"
+            "  \"moneysupply\" : \"supply\"       (numeric) The money supply when this block was added to the blockchain\n"
+            "  \"nextblockhash\" : \"hash\"       (string) The hash of the next block\n"
             "}\n"
             "\nResult (for verbose=false):\n"
             "\"data\"             (string) A string that is serialized, hex-encoded data for block 'hash'.\n"
@@ -374,6 +377,11 @@ UniValue getblockheader(const UniValue& params, bool fHelp)
             "2. verbose           (boolean, optional, default=true) true for a json object, false for the hex encoded data\n"
             "\nResult (for verbose = true):\n"
             "{\n"
+            "  \"hash\" : \"hash\",     (string) the block hash (same as provided)\n"
+            "  \"confirmations\" : n,   (numeric) The number of confirmations, or -1 if the block is not on the main chain\n"
+            "  \"size\" : n,            (numeric) The block size\n"
+            "  \"strippedsize\" : n,    (numeric) The block size excluding witness data\n"
+            "  \"height\" : n,          (numeric) The block height or index\n"
             "  \"version\" : n,         (numeric) The block version\n"
             "  \"previousblockhash\" : \"hash\",  (string) The hash of the previous block\n"
             "  \"merkleroot\" : \"xxxx\", (string) The merkle root\n"
