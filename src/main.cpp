@@ -3994,7 +3994,7 @@ static int GetWitnessCommitmentIndex(const CBlock& block)
     return commitpos;
 }
 
-void UpdateUncommitedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev)
+void UpdateUncommittedBlockStructures(CBlock& block, const CBlockIndex* pindexPrev)
 {
     int commitpos = GetWitnessCommitmentIndex(block);
     static const std::vector<unsigned char> nonce(32, 0x00);
@@ -4036,7 +4036,7 @@ std::vector<unsigned char> GenerateCoinbaseCommitment(CBlock& block, const CBloc
             block.vtx[0].UpdateHash();
         }
     }
-    UpdateUncommitedBlockStructures(block, pindexPrev);
+    UpdateUncommittedBlockStructures(block, pindexPrev);
     return commitment;
 }
 
