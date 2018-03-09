@@ -66,6 +66,7 @@ public:
         SetHexBool(str);
     }
     
+
     CBigNum(const CBigNum& b)
     {
         bn = BN_new();
