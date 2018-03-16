@@ -770,7 +770,7 @@ bool CBudgetManager::IsTransactionValid(const CTransaction& txNew, int nBlockHei
         ++it;
     }
 
-    LogPrint("masternode","CBudgetManager::IsTransactionValid() - nHighestCount: %lli, 5%% of Masternodes: %lli mapFinalizedBudgets.size(): %ld\n",
+    LogPrint("masternode","CBudgetManager::IsTransactionValid() - nHighestCount: %lli, 5%% of Masternodes: %lli mapFinalizedBudgets.size(): %ld\n", 
               nHighestCount, nFivePercent, mapFinalizedBudgets.size());
     /*
         If budget doesn't have 5% of the network votes, then we should pay a masternode instead

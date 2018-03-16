@@ -149,6 +149,7 @@ extern int64_t nReserveBalance;
 extern std::map<uint256, int64_t> mapRejectedBlocks;
 extern std::map<unsigned int, unsigned int> mapHashedBlocks;
 extern std::set<std::pair<COutPoint, unsigned int> > setStakeSeen;
+extern std::map<uint256, int64_t> mapZerocoinspends; //txid, time received
 
 /** Best header we've seen so far (used for getheaders queries' starting points). */
 extern CBlockIndex* pindexBestHeader;
@@ -619,20 +620,4 @@ struct CBlockTemplate {
     std::vector<int64_t> vTxSigOps;
 };
 
-/*
-class CValidationInterface
-{
-protected:
-    virtual void SyncTransaction(const CTransaction& tx, const CBlock* pblock){};
-    virtual void EraseFromWallet(const uint256& hash){};
-    virtual void SetBestChain(const CBlockLocator& locator){};
-    virtual bool UpdatedTransaction(const uint256& hash) { return false; };
-    virtual void Inventory(const uint256& hash){};
-    virtual void ResendWalletTransactions(){};
-    virtual void BlockChecked(const CBlock&, const CValidationState&){};
-    friend void ::RegisterValidationInterface(CValidationInterface*);
-    friend void ::UnregisterValidationInterface(CValidationInterface*);
-    friend void ::UnregisterAllValidationInterfaces();
-};
-*/
 #endif // BITCOIN_MAIN_H

@@ -21,6 +21,7 @@
 #ifdef ENABLE_WALLET
 #include "wallet.h"
 #endif
+#include "validationinterface.h"
 #include "masternode-payments.h"
 
 #include "spork.h"        //For SPORK check
@@ -208,7 +209,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             double dPriority = 0;
             CAmount nTotalIn = 0;
             bool fMissingInputs = false;
-            BOOST_FOREACH (const CTxIn& txin, tx.vin) {
+            for (const CTxIn& txin : tx.vin) {
                 // Read prev transaction
                 if (!view.HaveCoins(txin.prevout.hash)) {
                     // This should never happen; all transactions in the memory
@@ -242,7 +243,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
                 int nConf = nHeight - coins->nHeight;
 
-                dPriority += (double)nValueIn * nConf;
+                // zPHR spends can have very large priority, use non-overflowing safe functions
+                dPriority = double_safe_addition(dPriority, ((double)nValueIn * nConf));
+
             }
             if (fMissingInputs) continue;
 
@@ -452,10 +455,17 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
         wallet.mapRequestCount[pblock->GetHash()] = 0;
     }
 
+    // Inform about the new block
+    GetMainSignals().BlockFound(pblock->GetHash());
+
     // Process this block the same as if we had received it from another node
     CValidationState state;
     if (!ProcessNewBlock(state, NULL, pblock))
         return error("SENDMiner : ProcessNewBlock, block not accepted");
+
+    for (CNode* node : vNodes) {
+        node->PushInventory(CInv(MSG_BLOCK, pblock->GetHash()));
+    }
 
     for (CNode* node : vNodes) {
         node->PushInventory(CInv(MSG_BLOCK, pblock->GetHash()));
