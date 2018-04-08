@@ -625,6 +625,8 @@ public:
         genesis.nTime = 1454124731;
         genesis.nBits = 0x207fffff;
         genesis.nNonce = 12345;
+        nMaturity = 0;
+        nLastPOWBlock = 999999999; // PoS complicates Regtest because of timing issues
 
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 51476;

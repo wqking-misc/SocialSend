@@ -189,3 +189,5 @@ doc/Doxyfile
 /logs
 warrnings-error.txt
 deploy-warrnings-error.txt
+
+cache
