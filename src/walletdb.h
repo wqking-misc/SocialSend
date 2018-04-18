@@ -78,7 +78,7 @@ public:
 class CWalletDB : public CDB
 {
 public:
-    CWalletDB(const std::string& strFilename, const char* pszMode = "r+") : CDB(strFilename, pszMode, CLIENT_VERSION | SERIALIZE_TRANSACTION_WITNESS)
+    CWalletDB(const std::string& strFilename, const char* pszMode = "r+") : CDB(strFilename, pszMode, CLIENT_VERSION)
     {
     }
 
