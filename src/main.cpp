@@ -1131,7 +1131,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
         return false;
 
     // ----------- swiftTX transaction scanning -----------
-
+    string reason;
     BOOST_FOREACH (const CTxIn& in, tx.vin) {
         if (mapLockedInputs.count(in.prevout)) {
             if (mapLockedInputs[in.prevout] != tx.GetHash()) {
@@ -1160,7 +1160,6 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     }
 
     // Rather not work on nonstandard transactions (unless -testnet/-regtest)
-    string reason;
     if (Params().RequireStandard() && !IsStandardTx(tx, reason))
         return state.DoS(0,
             error("AcceptToMemoryPool : nonstandard transaction: %s", reason),
