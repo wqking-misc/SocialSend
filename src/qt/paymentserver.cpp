@@ -203,11 +203,9 @@ void PaymentServer::ipcParseCommandLine(int argc, char* argv[])
 
             SendCoinsRecipient r;
             if (GUIUtil::parseBitcoinURI(arg, &r) && !r.address.isEmpty()) {
-                CBitcoinAddress address(r.address.toStdString());
-
-                if (address.IsValid(Params(CBaseChainParams::MAIN))) {
+                if (IsValidDestinationString(r.address.toStdString(), Params(CBaseChainParams::MAIN))) {
                     SelectParams(CBaseChainParams::MAIN);
-                } else if (address.IsValid(Params(CBaseChainParams::TESTNET))) {
+                } else if (IsValidDestinationString(r.address.toStdString(), Params(CBaseChainParams::TESTNET))) {
                     SelectParams(CBaseChainParams::TESTNET);
                 }
             }
@@ -401,8 +399,7 @@ void PaymentServer::handleURIOrFile(const QString& s)
         {
             SendCoinsRecipient recipient;
             if (GUIUtil::parseBitcoinURI(s, &recipient)) {
-                CBitcoinAddress address(recipient.address.toStdString());
-                if (!address.IsValid()) {
+                if (IsValidDestinationString(recipient.address.toStdString())) {
                     emit message(tr("URI handling"), tr("Invalid payment address %1").arg(recipient.address),
                         CClientUIInterface::MSG_ERROR);
                 } else
@@ -522,7 +519,7 @@ bool PaymentServer::processPaymentRequest(PaymentRequestPlus& request, SendCoins
         CTxDestination dest;
         if (ExtractDestination(sendingTo.first, dest)) {
             // Append destination address
-            addresses.append(QString::fromStdString(CBitcoinAddress(dest).ToString()));
+            addresses.append(QString::fromStdString(EncodeDestination(dest)));
         } else if (!recipient.authenticatedMerchant.isEmpty()) {
             // Insecure payments to custom send addresses are not supported
             // (there is no good way to tell the user where they are paying in a way

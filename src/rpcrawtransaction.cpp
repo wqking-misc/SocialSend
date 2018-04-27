@@ -54,7 +54,7 @@ void ScriptPubKeyToJSON(const CScript& scriptPubKey, UniValue& out, bool fInclud
 
     UniValue a(UniValue::VARR);
     BOOST_FOREACH (const CTxDestination& addr, addresses)
-        a.push_back(CBitcoinAddress(addr).ToString());
+        a.push_back(EncodeDestination(addr));
     out.push_back(Pair("addresses", a));
 }
 
@@ -132,11 +132,10 @@ UniValue searchrawtransactions(const UniValue& params, bool fHelp)
     if (!fAddrIndex)
         throw JSONRPCError(RPC_MISC_ERROR, "Address index not enabled");
     
-    CBitcoinAddress address(params[0].get_str());
-    if (!address.IsValid())
+    if (!IsValidDestinationString(params[0].get_str()))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
-    
-    CTxDestination dest = address.Get();
+
+    CTxDestination dest = DecodeDestination(params[0].get_str());
     
     std::set<CExtDiskTxPos> setpos;
     if (!FindTransactionsByDestination(dest, setpos))
@@ -322,14 +321,15 @@ UniValue listunspent(const UniValue& params, bool fHelp)
     if (params.size() > 1)
         nMaxDepth = params[1].get_int();
 
-    set<CBitcoinAddress> setAddress;
+    set<CTxDestination> setAddress;
     if (params.size() > 2) {
         UniValue inputs = params[2].get_array();
         for (unsigned int inx = 0; inx < inputs.size(); inx++) {
             const UniValue& input = inputs[inx];
-            CBitcoinAddress address(input.get_str());
-            if (!address.IsValid())
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid SEND address: ") + input.get_str());
+            if (!IsValidDestinationString(input.get_str()))
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Phore address: ") + input.get_str());
+            
+            CTxDestination address = DecodeDestination(input.get_str());
             if (setAddress.count(address))
                 throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ") + input.get_str());
             setAddress.insert(address);
@@ -368,7 +368,7 @@ UniValue listunspent(const UniValue& params, bool fHelp)
         entry.push_back(Pair("vout", out.i));
         CTxDestination address;
         if (ExtractDestination(out.tx->vout[out.i].scriptPubKey, address)) {
-            entry.push_back(Pair("address", CBitcoinAddress(address).ToString()));
+            entry.push_back(Pair("address", EncodeDestination(address)));
             if (pwalletMain->mapAddressBook.count(address))
                 entry.push_back(Pair("account", pwalletMain->mapAddressBook[address].name));
         }
@@ -448,18 +448,19 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp)
         rawTx.vin.push_back(in);
     }
 
-    set<CBitcoinAddress> setAddress;
+    set<CTxDestination> setAddress;
     vector<string> addrList = sendTo.getKeys();
     BOOST_FOREACH(const string& name_, addrList) {
-        CBitcoinAddress address(name_);
-        if (!address.IsValid())
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid SEND address: ")+name_);
+        if (!IsValidDestinationString(name_))
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Phore address: ")+name_);
+        
+        CTxDestination address = DecodeDestination(name_);
 
         if (setAddress.count(address))
             throw JSONRPCError(RPC_INVALID_PARAMETER, string("Invalid parameter, duplicated address: ")+name_);
         setAddress.insert(address);
 
-        CScript scriptPubKey = GetScriptForDestination(address.Get());
+        CScript scriptPubKey = GetScriptForDestination(address);
         CAmount nAmount = AmountFromValue(sendTo[name_]);
 
         CTxOut out(nAmount, scriptPubKey);
@@ -572,7 +573,7 @@ UniValue decodescript(const UniValue& params, bool fHelp)
     }
     ScriptPubKeyToJSON(script, r, false);
 
-    r.push_back(Pair("p2sh", CBitcoinAddress(CScriptID(script)).ToString()));
+    r.push_back(Pair("p2sh", EncodeDestination(CTxDestination(CScriptID(script)))));
     return r;
 }
 
