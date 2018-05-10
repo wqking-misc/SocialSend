@@ -2801,6 +2801,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nValueOut = 0;
     CAmount nValueIn = 0;
     vector<uint256> vSpendsInBlock;
+    uint256 hashBlock = block.GetHash();
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
 
@@ -2814,8 +2815,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             if (!view.HaveInputs(tx))
                 return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
                     REJECT_INVALID, "bad-txns-inputs-missingorspent");
-
-
+            
             if (!tx.IsCoinStake())
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
             nValueIn += view.GetValueIn(tx);
@@ -2854,7 +2854,11 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     // track money supply and mint amount info
     CAmount nMoneySupplyPrev = pindex->pprev ? pindex->pprev->nMoneySupply : 0;
     pindex->nMoneySupply = nMoneySupplyPrev + nValueOut - nValueIn;
-    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev;
+    pindex->nMint = pindex->nMoneySupply - nMoneySupplyPrev + nFees;
+
+//    LogPrintf("XX69----------> ConnectBlock(): nValueOut: %s, nValueIn: %s, nFees: %s, nMint: %s zPHRSpent: %s\n",
+//              FormatMoney(nValueOut), FormatMoney(nValueIn),
+//              FormatMoney(nFees), FormatMoney(pindex->nMint), FormatMoney(nAmountZerocoinSpent));
 
     int64_t nTime1 = GetTimeMicros();
     nTimeConnect += nTime1 - nTimeStart;
@@ -3450,7 +3454,10 @@ bool ActivateBestChain(CValidationState& state, CBlock* pblock, bool fAlreadyChe
             uiInterface.NotifyBlockTip(hashNewTip);
             GetMainSignals().UpdatedBlockTip(pindexNewTip);
 
-            unsigned size = GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION);
+            unsigned size = 0;
+
+            if (pblock)
+                size = GetSerializeSize(*pblock, SER_NETWORK, PROTOCOL_VERSION);
             // If the size is over 1 MB notify external listeners, and it is within the last 5 minutes
             if (size > MAX_BLOCK_SIZE_LEGACY && pblock->GetBlockTime() > GetAdjustedTime() - 300) {
                 uiInterface.NotifyBlockSize(static_cast<int>(size), hashNewTip);
@@ -4030,16 +4037,20 @@ bool IsBlockHashInChain(const uint256& hashBlock)
     return chainActive.Contains(mapBlockIndex[hashBlock]);
 }
 
-bool IsTransactionInChain(uint256 txId, int& nHeightTx)
-{
+bool IsTransactionInChain(const uint256& txId, int& nHeightTx, CTransaction& tx) {
     uint256 hashBlock;
-    CTransaction tx;
-    GetTransaction(txId, tx, hashBlock, true);
+    if (!GetTransaction(txId, tx, hashBlock, true))
+        return false;
     if (!IsBlockHashInChain(hashBlock))
         return false;
 
 
     return true;
+}
+
+bool IsTransactionInChain(const uint256& txId, int& nHeightTx) {
+    CTransaction tx;
+    return IsTransactionInChain(txId, nHeightTx, tx);
 }
 
 bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIndex* const pindexPrev)
