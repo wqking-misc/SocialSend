@@ -78,7 +78,7 @@ enum AvailableCoinsType {
     ONLY_10000 = 5                        // find masternode outputs including locked ones (use with caution)
 };
 
-enum OutputType
+enum OutputType : int
 {
     OUTPUT_TYPE_NONE,
     OUTPUT_TYPE_LEGACY,
