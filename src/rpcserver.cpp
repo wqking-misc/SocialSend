@@ -352,6 +352,9 @@ static const CRPCCommand vRPCCommands[] =
         /* send features */
         {"send", "masternode", &masternode, true, true, false},
         {"send", "listmasternodes", &listmasternodes, true, true, false},
+        {"send", "createmasternodebroadcast", &createmasternodebroadcast, true, true, false},
+        {"send", "decodemasternodebroadcast", &decodemasternodebroadcast, true, true, false},
+        {"send", "relaymasternodebroadcast", &relaymasternodebroadcast, true, true, false},
         {"send", "getmasternodecount", &getmasternodecount, true, true, false},
         {"send", "masternodeconnect", &masternodeconnect, true, true, false},
         {"send", "masternodecurrent", &masternodecurrent, true, true, false},
@@ -379,8 +382,6 @@ static const CRPCCommand vRPCCommands[] =
         {"send", "getpoolinfo", &getpoolinfo, true, true, false},
         {"send", "makekeypair", &makekeypair, true, true, false},
 #ifdef ENABLE_WALLET
-        {"send", "obfuscation", &obfuscation, false, false, true}, /* not threadSafe because of SendMoney */
-
         /* Wallet */
         {"wallet", "addmultisigaddress", &addmultisigaddress, true, false, true},
         {"wallet", "addwitnessaddress", &addwitnessaddress, true, false, true},

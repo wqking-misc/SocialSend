@@ -112,6 +112,7 @@ BITCOIN_CORE_H = \
   consensus/validation.h \
   compressor.h \
   primitives/block.h \
+  primitives/deterministicmint.h \
   primitives/transaction.h \
   core_io.h \
   crypter.h \
@@ -139,6 +140,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   miner.h \
+  mintpool.h \
   mruset.h \
   netbase.h \
   net.h \
@@ -184,6 +186,8 @@ BITCOIN_CORE_H = \
   wallet.h \
   wallet_ismine.h \
   walletdb.h \
+  zphrtracker.h \
+  zphrwallet.h \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h \
   zmq/zmqnotificationinterface.h \
@@ -259,12 +263,15 @@ libbitcoin_wallet_a_SOURCES = \
   masternode-sync.cpp \
   masternodeconfig.cpp \
   masternodeman.cpp \
+  mintpool.cpp \
   rpcdump.cpp \
   rpcwallet.cpp \
   kernel.cpp \
   wallet.cpp \
   wallet_ismine.cpp \
   walletdb.cpp \
+  zphrwallet.cpp \
+  zphrtracker.cpp \
   $(BITCOIN_CORE_H)
 
 # crypto primitives library
@@ -317,6 +324,7 @@ libbitcoin_common_a_SOURCES = \
   compressor.cpp \
   consensus/merkle.cpp \
   primitives/block.cpp \
+  primitives/deterministicmint.cpp \
   primitives/transaction.cpp \
   core_read.cpp \
   core_write.cpp \

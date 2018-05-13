@@ -22,6 +22,8 @@
 #include "validationinterface.h"
 #include "wallet_ismine.h"
 #include "walletdb.h"
+#include "zphrtracker.h"
+#include "zphrwallet.h"
 
 #include <algorithm>
 #include <map>
@@ -52,6 +54,8 @@ static const CAmount DEFAULT_TRANSACTION_MAXFEE = 1 * COIN;
 static const CAmount nHighTransactionMaxFeeWarning = 100 * nHighTransactionFeeWarning;
 //! Largest (in bytes) free transaction we're willing to create
 static const unsigned int MAX_FREE_TRANSACTION_CREATE_SIZE = 1000;
+//! -custombackupthreshold default
+static const int DEFAULT_CUSTOMBACKUPTHRESHOLD = 1;
 
 class CAccountingEntry;
 class CCoinControl;
@@ -74,8 +78,30 @@ enum AvailableCoinsType {
     ALL_COINS = 1,
     ONLY_DENOMINATED = 2,
     ONLY_NOT10000IFMN = 3,
-    ONLY_NONDENOMINATED_NOT10000IFMN = 4, // ONLY_NONDENOMINATED and not 10000 SEND at the same time
-    ONLY_10000 = 5                        // find masternode outputs including locked ones (use with caution)
+    ONLY_NONDENOMINATED_NOT10000IFMN = 4, // ONLY_NONDENOMINATED and not 10000 PHR at the same time
+    ONLY_10000 = 5,                        // find masternode outputs including locked ones (use with caution)
+    STAKABLE_COINS = 6                          // UTXO's that are valid for staking
+};
+
+// Possible states for zPHR send
+enum ZerocoinSpendStatus {
+    ZPHR_SPEND_OKAY = 0,                            // No error
+    ZPHR_SPEND_ERROR = 1,                           // Unspecified class of errors, more details are (hopefully) in the returning text
+    ZPHR_WALLET_LOCKED = 2,                         // Wallet was locked
+    ZPHR_COMMIT_FAILED = 3,                         // Commit failed, reset status
+    ZPHR_ERASE_SPENDS_FAILED = 4,                   // Erasing spends during reset failed
+    ZPHR_ERASE_NEW_MINTS_FAILED = 5,                // Erasing new mints during reset failed
+    ZPHR_TRX_FUNDS_PROBLEMS = 6,                    // Everything related to available funds
+    ZPHR_TRX_CREATE = 7,                            // Everything related to create the transaction
+    ZPHR_TRX_CHANGE = 8,                            // Everything related to transaction change
+    ZPHR_TXMINT_GENERAL = 9,                        // General errors in MintToTxIn
+    ZPHR_INVALID_COIN = 10,                         // Selected mint coin is not valid
+    ZPHR_FAILED_ACCUMULATOR_INITIALIZATION = 11,    // Failed to initialize witness
+    ZPHR_INVALID_WITNESS = 12,                      // Spend coin transaction did not verify
+    ZPHR_BAD_SERIALIZATION = 13,                    // Transaction verification failed
+    ZPHR_SPENT_USED_ZPHR = 14,                      // Coin has already been spend
+    ZPHR_TX_TOO_LARGE = 15,                         // The transaction is larger than the max tx size
+    ZPHR_SPEND_V1_SEC_LEVEL
 };
 
 enum OutputType : int
@@ -192,6 +218,8 @@ public:
      *      strWalletFile (immutable after instantiation)
      */
     mutable CCriticalSection cs_wallet;
+
+    CzPHRWallet* zwalletMain;
 
     bool fFileBacked;
     bool fWalletUnlockAnonymizeOnly;
@@ -470,7 +498,6 @@ public:
 
     std::set<CTxDestination> GetAccountAddresses(std::string strAccount) const;
 
-    bool GetBudgetSystemCollateralTX(CTransaction& tx, uint256 hash, bool useIX);
     bool GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, bool useIX);
 
     // get the Obfuscation chain depth for a given input
@@ -609,6 +636,9 @@ public:
 
     /** MultiSig address added */
     boost::signals2::signal<void(bool fHaveMultiSig)> NotifyMultiSigChanged;
+
+    /** notify wallet file backed up */
+    boost::signals2::signal<void (const bool& fSuccess, const std::string& filename)> NotifyWalletBacked;
 };
 
 /** A key allocated from the key pool. */
@@ -918,7 +948,7 @@ public:
     CAmount GetLockedCredit() const;
     CAmount GetDenominatedCredit(bool unconfirmed, bool fUseCache = true) const;
     CAmount GetImmatureWatchOnlyCredit(const bool& fUseCache = true) const;
-    CAmount GetAvailableWatchOnlyCredit(const bool& fUseCache = true) const;        
+    CAmount GetAvailableWatchOnlyCredit(const bool& fUseCache = true) const;
     CAmount GetLockedWatchOnlyCredit() const;
 
     CAmount GetChange() const

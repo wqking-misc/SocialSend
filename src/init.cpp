@@ -1406,10 +1406,10 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
                     break;
                 }
 
-                //if (fAddrIndex != GetBoolArg("-addrindex", true)) {
-                //    strLoadError = _("You need to rebuild the database using -reindex to change -addrindex");
-                //    break;
-                //}
+                if (fAddrIndex != GetBoolArg("-addrindex", true)) {
+                    strLoadError = _("You need to rebuild the database using -reindex to change -addrindex");
+                    break;
+                }
 
                 // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
                 if (GetBoolArg("-reindexmoneysupply", false)) {
