@@ -18,6 +18,8 @@
 #define MASTERNODES_DSEG_SECONDS (3 * 60 * 60)
 #define TIME_INTERVAL_BETWEEN_NETCHECK_SECONDS 3600
 
+#define MINIMUM_PROTOCOL_VERSION_OLD_PING 70003
+
 using namespace std;
 
 class CMasternodeMan;
