@@ -984,7 +984,7 @@ bool CheckTransaction(const CTransaction& tx, bool fZerocoinActive, bool fReject
         return state.DoS(100, false, REJECT_INVALID, "bad-txns-oversize");
 
     // Reject transactions with witness before segregated witness activates (override with -prematurewitness)
-    if (!GetBoolArg("-prematurewitness",false) && !tx.wit.IsNull() && !fWitnessEnabled) {
+    if (!GetBoolArg("-prematurewitness", false) && !tx.wit.IsNull() && !fWitnessEnabled) {
         return state.DoS(0, false, REJECT_NONSTANDARD, "no-witness-yet", true);
     }
 
@@ -1093,6 +1093,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
 
     if (!CheckTransaction(tx, false, true, state, GetSporkValue(SPORK_16_SEGWIT_ACTIVATION) < chainActive.Tip()->nTime))
         return state.DoS(100, error("AcceptToMemoryPool: : CheckTransaction failed"), REJECT_INVALID, "bad-tx");
+    }
 
     // Coinbase is only valid in a block, not as a loose transaction
     if (tx.IsCoinBase())
@@ -1134,7 +1135,7 @@ bool AcceptToMemoryPool(CTxMemPool& pool, CValidationState& state, const CTransa
     }
 
     // Don't accept witness transactions before the final threshold passes
-    if (!tx.wit.IsNull() && !IsSporkActive(SPORK_16_SEGWIT_ACTIVATION)) {
+    if (!GetBoolArg("-prematurewitness", false) && !tx.wit.IsNull() && !IsSporkActive(SPORK_16_SEGWIT_ACTIVATION)) {
         return state.DoS(0, false, REJECT_NONSTANDARD, "no-witness-yet", true);
     }
 
@@ -6364,36 +6365,9 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 //       it was the one which was commented out
 int ActiveProtocol()
 {
-    // SPORK_14 is used for 70820 && 70821. Nodes < 70820 will not see it and still get their protocol version via SPORK_15
-    if (IsSporkActive(SPORK_14_NEW_PROTOCOL_ENFORCEMENT)) {
-
-        // SPORK_18 is used for activation of min stake age checks.  This causes consensus changes and results in a fork.
-        // When SPORK_18 is activated, and >95% of the network blocks are of version 5, enforce new protocol version.
-        // Block Version 5 if CTLV, enforce these additional protocol changes when BIP65 (CTLV) is activated.
-        if (IsSporkActive(SPORK_18_MIN_AGE_STAKE_ENFORCEMENT)) {
-            CBlockIndex* pindexPrev = chainActive.Tip();
-            // Required >95% of blocks to be version 5 before enforcement of protocol version 70821
-            if (CBlockIndex::IsSuperMajority(5, pindexPrev, Params().RejectBlockOutdatedMajority())) {
-                return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT; //return BIP0065_VERSION;
-            }
-        }
-
-        // Default to enforcing protocol version 70820 if SPORK_18 is not activated, or if consensus is not ready.
-        if (chainActive.Tip()->nHeight >= 1375100) {
-            return MIN_PEER_BEHAVING_PROTO_VERSION;
-        }
-    }
-
-    // Default to min version 70815 until activation of SPORK_14
-    return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
-
-
-    // SPORK_15 was used for 70810. Leave it 'OFF' so they see >= 70810 nodes.
-    //  Nodes > 70810 won't react to SPORK_14 messages beacuse it is not in their code.
-    /*if (IsSporkActive(SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2))
+    if (IsSporkActive(SPORK_16_SEGWIT_ACTIVATION))
         return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
-
-    return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;*/
+    return MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT;
 }
 
 // requires LOCK(cs_vRecvMsg)
