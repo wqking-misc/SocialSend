@@ -29,6 +29,8 @@ static const int BIP0065_VERSION = 70821;
 static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 70815;
 static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 70822;
 
+static const int MIN_PEER_VERSION_FIXED_SIGTIME = 70003;
+
 //! masternodes older than this proto version use old strMessage format for mnannounce
 static const int MIN_PEER_MNANNOUNCE = 70822;
 
