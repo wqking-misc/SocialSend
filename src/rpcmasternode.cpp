@@ -240,6 +240,11 @@ UniValue listmasternodes(const UniValue& params, bool fHelp)
                 EncodeDestination(CTxDestination(mn->pubKeyCollateralAddress.GetID())).find(strFilter) == string::npos) continue;
 
             std::string strStatus = mn->Status();
+            std::string strHost;
+            int port;
+            SplitHostPort(mn->addr.ToString(), port, strHost);
+            CNetAddr node = CNetAddr(strHost);
+            std::string strNetwork = GetNetworkName(node.GetNetwork());
 
             obj.push_back(Pair("rank", (strStatus == "ENABLED" ? s.first : 0)));
             obj.push_back(Pair("txhash", strTxHash));
