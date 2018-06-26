@@ -92,7 +92,7 @@ public:
     int PoolMaxTransactions() const { return nPoolMaxTransactions; }
     std::string SporkKey() const { return strSporkKey; }
     std::string ObfuscationPoolDummyAddress() const { return strObfuscationPoolDummyAddress; }
-    int64_t Budget_Fee_Confirmations() const { return nBudget_Fee_Confirmations; }
+    int64_t BudgetFeeConfirmations() const { return nBudgetFeeConfirmations; }
     CBaseChainParams::Network NetworkID() const { return networkID; }
     int NewMasternodeReward_StartBlock() const { return nNewMasternodeReward_StartBlock; }
     int NewMasternodeReward_Collateral() const { return nNewMasternodeReward_Collateral; }
