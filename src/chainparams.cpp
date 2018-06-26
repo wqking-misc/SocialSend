@@ -387,7 +387,6 @@ public:
         vAlertPubKey = ParseHex("0475253fdd4a4f4fdc9132ee88309f082c8390ef0f74ee2aa70ffb857b54b9d61522658cb9c5822e820d6d96af338b1be09c9bf2b0f7043db4b76ab5f05cba9752");
         nDefaultPort = 50050;
         bnProofOfWorkLimit = ~uint256(0) >> 20; // SEND starting difficulty is 1 / 2^12
-        nSubsidyHalvingInterval = 210000;
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 16200;  // 75% ... ((60*60*24)/30)*7.5 = 21600 or about 7 days
         nRejectBlockOutdatedMajority = 20520;  // 95%
@@ -616,7 +615,6 @@ public:
         pchMessageStart[1] = 0xcf;
         pchMessageStart[2] = 0x7e;
         pchMessageStart[3] = 0xac;
-        nSubsidyHalvingInterval = 150;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
         nToCheckBlockUpgradeMajority = 1000;
@@ -686,7 +684,6 @@ public:
     }
 
     //! Published setters to allow changing values in unit test cases
-    virtual void setSubsidyHalvingInterval(int anSubsidyHalvingInterval) { nSubsidyHalvingInterval = anSubsidyHalvingInterval; }
     virtual void setEnforceBlockUpgradeMajority(int anEnforceBlockUpgradeMajority) { nEnforceBlockUpgradeMajority = anEnforceBlockUpgradeMajority; }
     virtual void setRejectBlockOutdatedMajority(int anRejectBlockOutdatedMajority) { nRejectBlockOutdatedMajority = anRejectBlockOutdatedMajority; }
     virtual void setToCheckBlockUpgradeMajority(int anToCheckBlockUpgradeMajority) { nToCheckBlockUpgradeMajority = anToCheckBlockUpgradeMajority; }
