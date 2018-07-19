@@ -24,6 +24,8 @@
 #include "walletmodel.h"
 #include "announcementview.h"
 #include "budgetlistview.h"
+#include "proposallist.h"
+
 #include "ui_interface.h"
 
 #include <QAction>
@@ -133,6 +135,10 @@ WalletView::WalletView(QWidget* parent) : QStackedWidget(parent),
         masternodeListPage = new MasternodeList();
         addWidget(masternodeListPage);
     }
+	
+    proposalListPage = new ProposalList();
+    addWidget(proposalListPage);	
+	
 
     // Clicking on a transaction on the overview pre-selects the transaction on the transaction history page
     connect(overviewPage, SIGNAL(transactionClicked(QModelIndex)), transactionView, SLOT(focusTransaction(QModelIndex)));
@@ -273,6 +279,11 @@ void WalletView::gotoMasternodePage()
 void WalletView::gotoReceiveCoinsPage()
 {
     setCurrentWidget(receiveCoinsPage);
+}
+
+void WalletView::gotoProposalPage()
+{
+    setCurrentWidget(proposalListPage);
 }
 
 void WalletView::gotoSendCoinsPage(QString addr)
