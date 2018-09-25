@@ -125,15 +125,23 @@ QTabBar::tab:hover:!selected {
 }
 QTabBar::tab {
     color:#fff;
+    border-top-color:transparent;
+    border-left-color:transparent;
+    border-right-color:transparent;
 }
 QTabBar::tab:selected {
     border-bottom: 3px solid #00d188;
     background-color:transparent;
 }
+QTabBar::tab:pressed {
+    outline:0;
+}
 QWidget {
-	selection-background-color:#535353; /* Object highlight color */
+	selection-background-color:#535353;
+	/* Object highlight color */
 	selection-color:#fff;
-	outline:0; /* Remove Annoying Focus Rectangle */
+	outline:0;
+	/* Remove Annoying Focus Rectangle */
 }
 QGroupBox {
     background-color: transparent;
@@ -330,12 +338,14 @@ QAbstractSpinBox::down-arrow {
 }
 /****************************************************************************************/
 
-QHeaderView { /* Table Header */
+QHeaderView {
+	/* Table Header */
 	background-color:transparent;
 	outline:0;
 }
 
-QHeaderView::section { /* Table Header Sections */
+QHeaderView::section {
+	/* Table Header Sections */
 	qproperty-alignment:center;
 	background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 0.25, stop: 0 #4a4a4a, stop: 1 #535353);
 	color:#fff;
@@ -374,19 +384,21 @@ QScrollArea > QWidget > QScrollBar { background: palette(base); }
 	padding-right:12px;
 }
 
-QTableView::item, #transactionView::item { /* Table Item */
-background-color:transparent;
-font-size:12px;
-color:white;
-border:0;
-border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-border-top: 1px solid rgba(255, 255, 255, 0.05);    
-padding-right:12px;
+QTableView::item, #transactionView::item {
+	/* Table Item */
+	background-color:transparent;
+	font-size:12px;
+	color:white;
+	border:0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	border-top: 1px solid rgba(255, 255, 255, 0.05);    
+	padding-right:12px;
 }
 
-QTableView::item:selected { /* Table Item Selected */
-background-color:#535353;
-color:#fff;
+QTableView::item:selected {
+	/* Table Item Selected */
+	background-color:#535353;
+	color:#fff;
 }
 
 QTableWidget { /* Table Background */
@@ -1294,12 +1306,6 @@ QDialog#SendCoinsDialog .QFrame#frameCoinControl > .QLabel {
 	/* Default Font Color and  Size */
 	font-weight: normal;
 }
-QDialog#SendCoinsDialog .QFrame#frameCoinControl .QPushButton#pushButtonCoinControl {
-	/* Coin Control Inputs Button */
-	/* padding-left:10px;
-padding-right:10px;
-min-height:25px; */
-}
 
 QDialog#SendCoinsDialog .QFrame#frameCoinControl .QLabel#labelCoinControlFeatures {
 	/* Coin Control Header */
@@ -1392,8 +1398,8 @@ QDialog#SendCoinsDialog .QCheckBox#checkUseObfuscation {
 }
 QDialog#SendCoinsDialog .QCheckBox#checkSwiftTX {
 	/* SwiftTX Checkbox */
-	color: #616161;
-	font-weight: bold;
+	color: #fff;
+	font-weight: normal;
 	background: transparent;
 	/*background: qradialgradient(cx:0.5, cy:0.5, radius: 0.5, fx:0.5, fy:0.5, stop:0 rgba(248, 246, 246, 128), stop: 1 rgba(0, 0, 0, 0));*/
 	border-radius: 5px;
@@ -1793,6 +1799,38 @@ QCalendarWidget QAbstractItemView:enabled {
 	color:#333;
 }
 
-#TEMintStatus {
+#TEMintStatus, #labelExplanation, #labelSmartFee2, #labelFeeEstimation {
     color: #747c83;
+}
+
+#labelSmartFee3, #labelForBalance, #labelCoinControlQuantityText, #labelCoinControlAmountText, #labelzPHRSelected, #labelQuantitySelected, #labelzPHRBalanceText, #labelSecurityLevel, #labelzAvailableText, #labelZsupplyText, #labelzPHRAmountText, #labelBalanceTextz, #labelTotalTextz, #labelBalanceText, #labelPendingText, #labelImmatureText, #labelLockedBalanceText, #labelTotalText, #labelzBalanceMatureText, #labelzBalanceUnconfirmedText, #labelzBalanceImmatureText, #labelzBalanceText {
+    font-weight:bold;
+}
+
+
+QPushButton#pushButtonSpentReset, QPushButton#pushButtonMintReset {
+    /* background-color: transparent; */
+	border: 2px solid #707780;
+    color: #707780;
+    border-radius:0px;
+    padding-left: 20px;
+	padding-right: 20px;
+}
+
+
+QGroupBox {
+    margin-top: 6px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    padding: 0px 5px 20px 0px;
+    font-size:18px;
+}
+
+
+#resetButton, #cancelButton {
+    background-color: transparent;
+	border: 2px solid #707780;
+    color: #707780;
 }
