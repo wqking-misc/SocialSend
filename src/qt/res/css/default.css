@@ -1627,7 +1627,7 @@ QWidget#ReceiveCoinsDialog .QFrame#frame2 .QLabel#label_2 {
 	background-color: transparent;
 	min-width: 102px;
 	color: #ffffff;
-	font-weight: normal;
+	font-weight: 500;
 	font-size: 16px;
 	padding-right: 5px;
 }
@@ -1636,7 +1636,7 @@ QWidget#ReceiveCoinsDialog .QFrame#frame2 .QLabel#label {
 	background-color: transparent;
 	min-width: 102px;
 	color: #ffffff;
-	font-weight: normal;
+	font-weight: 500;
 	font-size: 16px;
 	padding-right: 5px;
 }
@@ -1645,7 +1645,7 @@ QWidget#ReceiveCoinsDialog .QFrame#frame2 .QLabel#label_3 {
 	background-color: transparent;
 	min-width: 102px;
 	color: #ffffff;
-	font-weight: normal;
+	font-weight: 500;
 	font-size: 16px;
 	padding-right: 5px;
 }
@@ -1803,8 +1803,8 @@ QCalendarWidget QAbstractItemView:enabled {
     color: #747c83;
 }
 
-#labelSmartFee3, #labelForBalance, #labelCoinControlQuantityText, #labelCoinControlAmountText, #labelzPHRSelected, #labelQuantitySelected, #labelzPHRBalanceText, #labelSecurityLevel, #labelzAvailableText, #labelZsupplyText, #labelzPHRAmountText, #labelBalanceTextz, #labelTotalTextz, #labelBalanceText, #labelPendingText, #labelImmatureText, #labelLockedBalanceText, #labelTotalText, #labelzBalanceMatureText, #labelzBalanceUnconfirmedText, #labelzBalanceImmatureText, #labelzBalanceText {
-    font-weight:bold;
+#labelSmartFee3, #labelForBalance, #labelCoinControlQuantityText, #labelCoinControlAmountText, #labelzPHRSelected, #labelQuantitySelected, #labelzPHRBalanceText, #labelSecurityLevel, #labelzAvailableText, #labelZsupplyText, #labelzPHRAmountText, #labelBalanceTextz, #labelTotalTextz, #labelBalanceText, #labelPendingText, #labelImmatureText, #labelLockedBalanceText, #labelTotalText, #labelzBalanceMatureText, #labelzBalanceUnconfirmedText, #labelzBalanceImmatureText, #labelzBalanceText, #payToLabel, #labelLabel, #amountLabel{
+    font-weight: 500;
 }
 
 
@@ -1839,13 +1839,20 @@ QGroupBox::title {
 }
 
 #labelTotalz {
-    font-weight:bold;
+    font-weight:500;
+    
 }
 
 #labelBalance, #labelUnconfirmed, #labelImmature, #labelLockedBalance, #labelTotal, #labelzBalanceMature, #labelzBalance{
-    font-size:24px;
+    font-size:22px;
+    
 }
 
 .negative-sum {
     color:#fff;
+}
+
+
+#labelBalance, #labelUnconfirmed, #labelImmature, #labelLockedBalance, #labelTotal, #labelzBalanceMature, #labelzBalance, #labelBalancez {
+    font-weight:100;
 }
