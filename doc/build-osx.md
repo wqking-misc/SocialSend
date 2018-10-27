@@ -44,8 +44,11 @@ Instructions: Homebrew
 
 ### Install dependencies using Homebrew
 
-        brew install git zip zmq librsvg qrencode autoconf automake berkeley-db4 libtool boost@1.60 miniupnpc openssl@1.0 pkg-config protobuf qt5
-        brew link --overwrite --force boost@1.60
+#### Install dependencies using Homebrew
+
+        brew install autoconf automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf qt5 zeromq libevent
+        
+        Note: On OSX versions lower than High Sierra, zeromq should be replaced with libzmq
 
 ### Building Executables
 
@@ -54,8 +57,13 @@ Instructions: Homebrew
         git clone https://github.com/SocialSend/SocialSend.git
         cd SocialSend
 
-2.  Build sendd y send-qt:
-
+2.  Make the Homebrew OpenSSL headers visible to the configure script  (do ```brew info openssl``` to find out why this is necessary, or if you use Homebrew with installation folders different from the default).
+         export LDFLAGS+=-L/usr/local/opt/openssl/lib
+        export CPPFLAGS+=-I/usr/local/opt/openssl/include
+        
+3.  Build sendd:
+        
+        chmod +x share/genbuild.sh autogen.sh 
         ./autogen.sh
     Pre 10.12:
 
@@ -68,15 +76,15 @@ Instructions: Homebrew
  
         make
 
-3.  It is also a good idea to build and run the unit tests:
+4.  It is also a good idea to build and run the unit tests:
 
         make check
 
-4.  (Optional) You can also install sendd to your path:
+5.  (Optional) You can also install sendd to your path:
 
         make install
 
-5.  (Optional) You can create .dmg file with command:
+6.  (Optional) You can create .dmg file with command:
 
         make deploy
 
@@ -141,7 +149,7 @@ Other commands:
     
 Troubleshooting:<a name="trouble"></a>
 ---------
-* brew install not working? Try replacing libzmq with zeromq in the brew install command
+* brew install not working? Try replacing zeromq with libzmq in the brew install command
                 
 * libprotobuf not found during ./configure? Make sure you have installed protobuf with `brew install protobuf` and then run `export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig` and try again
                 
