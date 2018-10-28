@@ -517,6 +517,7 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 
 bool fGenerateBitcoins = false;
 bool fMintableCoins = false;
+int nMintableLastCheck = 0;
 
 bool IsMinerValid(CWallet* pwallet) {
     if (Params().NetworkID() == CBaseChainParams::MAIN) {
@@ -556,22 +557,29 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
 
     while (fGenerateBitcoins || fProofOfStake) {
         if (fProofOfStake) {
+            //control the amount of times the client will check for mintable coins
+            if ((GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
+            {
+                nMintableLastCheck = GetTime();
+                fMintableCoins = pwallet->MintableCoins();
+            }
+
             if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
                 MilliSleep(5000);
                 continue;
             }
 
-            // Check validity of local node when mining
-            while (!IsMinerValid(pwallet)) {
-                if (!fProofOfStake) { // Break if PoW
-                    break;
-                }
-                // periodically check if there are mintable coins..
-                if ((GetTime() - nMintableLastCheck > nMintableCheckTime)) {
-                    nMintableLastCheck = GetTime();
-                    fMintableCoins = pwallet->MintableCoins();
-                }
+            while (vNodes.empty() || pwallet->IsLocked() || !fMintableCoins || (pwallet->GetBalance() > 0 && 
+                   nReserveBalance >= pwallet->GetBalance()) || !masternodeSync.IsSynced()) {
                 nLastCoinStakeSearchInterval = 0;
+                // Do a separate 1 minute check here to ensure fMintableCoins is updated
+                if (!fMintableCoins) {
+                    if (GetTime() - nMintableLastCheck > 1 * 60) // 1 minute check time
+                    {
+                        nMintableLastCheck = GetTime();
+                        fMintableCoins = pwallet->MintableCoins();
+                    }
+                }
                 MilliSleep(5000);
             }
             if (!fGenerateBitcoins && !fProofOfStake) {
