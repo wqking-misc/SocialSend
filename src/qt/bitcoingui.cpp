@@ -618,10 +618,17 @@ void BitcoinGUI::createToolBars()
         QToolBar* toolbar = new QToolBar(tr("Tabs toolbar"));
         toolbar->setObjectName("Main-Toolbar"); // Name for CSS addressing
         toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-       // Add some empty space at the top of the toolbars
-       QAction* spacer = new QAction(this);
-       toolbar->addAction(spacer);
-       toolbar->widgetForAction(spacer)->setObjectName("ToolbarSpacer");
+    //    // Add some empty space at the top of the toolbars
+    //    QAction* spacer = new QAction(this);
+    //    spacer->setMinimumHeight(10);
+    //    toolbar->addAction(spacer);
+    //    toolbar->widgetForAction(spacer)->setObjectName("ToolbarSpacer");
+
+       QWidget *spacer = new QWidget(this);
+        spacer->setMinimumHeight(20);
+        spacer->setMaximumHeight(20);
+        //spacer->setSizePolicy(QSizePolicy::Fixed);
+        toolbar->addWidget(spacer);
         
 
         toolbar->addAction(overviewAction);
