@@ -353,13 +353,16 @@ QAbstractSpinBox::down-arrow {
 
 QHeaderView {
 	/* Table Header */
-	background-color:transparent;
-	outline:0;
+	background-color: transparent;
+    outline: 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 QHeaderView::section {
 	/* Table Header Sections */
-	qproperty-alignment:center;
+	/* qproperty-alignment:center; */
+	qproperty-defaultAlignment: AlignLeft AlignVCenter;
+	qproperty-alignment: left;
 	background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 0.25, stop: 0 #4a4a4a, stop: 1 #535353);
 	color:#fff;
 	min-height:75px;
@@ -374,12 +377,20 @@ QHeaderView::section {
 }
 
 QHeaderView {
-	qproperty-defaultAlignment: AlignLeft AlignVCenter;
+	/* qproperty-defaultAlignment: AlignLeft AlignVCenter; */
 }
 QHeaderView::section:last {
 	qproperty-alignment: right;
 	qproperty-defaultAlignment: AlignRight;
+	/* qproperty-alignment: right;
+	qproperty-defaultAlignment: AlignRight; */
+	/* qproperty-alignment: right;
+	qproperty-defaultAlignment: AlignRight; */
 	border-right: 0;
+}
+
+QHeaderView::section:hover {
+	border-right:1px solid #333b46;
 }
 .QScrollArea {
 	background:transparent;
