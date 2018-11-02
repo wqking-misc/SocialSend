@@ -43,8 +43,11 @@ background-color:transparent !important;
     <enum>QFrame::Plain</enum>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <property name="spacing">
+    <property name="horizontalSpacing">
      <number>12</number>
+    </property>
+    <property name="verticalSpacing">
+     <number>10</number>
     </property>
     <item row="0" column="0">
      <widget class="QLabel" name="payToLabel">
