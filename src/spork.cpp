@@ -11,6 +11,7 @@
 #include "net.h"
 #include "protocol.h"
 #include "sync.h"
+#include "sporkdb.h"
 #include "util.h"
 #include <boost/lexical_cast.hpp>
 
@@ -25,6 +26,36 @@ CSporkManager sporkManager;
 std::map<uint256, CSporkMessage> mapSporks;
 std::map<int, CSporkMessage> mapSporksActive;
 
+// PIVX: on startup load spork values from previous session if they exist in the sporkDB
+void LoadSporksFromDB()
+{
+    for (int i = SPORK_START; i <= SPORK_END; ++i) {
+        // Since not all spork IDs are in use, we have to exclude undefined IDs
+        std::string strSpork = sporkManager.GetSporkNameByID(i);
+        if (strSpork == "Unknown") continue;
+
+        // attempt to read spork from sporkDB
+        CSporkMessage spork;
+        if (!pSporkDB->ReadSpork(i, spork)) {
+            LogPrintf("%s : no previous value for %s found in database\n", __func__, strSpork);
+            continue;
+        }
+
+        // add spork to memory
+        mapSporks[spork.GetHash()] = spork;
+        mapSporksActive[spork.nSporkID] = spork;
+        std::time_t result = spork.nValue;
+        // If SPORK Value is greater than 1,000,000 assume it's actually a Date and then convert to a more readable format
+        if (spork.nValue > 1000000) {
+            LogPrintf("%s : loaded spork %s with value %d : %s", __func__,
+                      sporkManager.GetSporkNameByID(spork.nSporkID), spork.nValue,
+                      std::ctime(&result));
+        } else {
+            LogPrintf("%s : loaded spork %s with value %d\n", __func__,
+                      sporkManager.GetSporkNameByID(spork.nSporkID), spork.nValue);
+        }
+    }
+}
 
 void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
@@ -37,6 +68,10 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
         vRecv >> spork;
 
         if (chainActive.Tip() == NULL) return;
+
+        // Ignore spork messages about unknown/deleted sporks
+        std::string strSpork = sporkManager.GetSporkNameByID(spork.nSporkID);
+        if (strSpork == "Unknown") return;
 
         uint256 hash = spork.GetHash();
         if (mapSporksActive.count(spork.nSporkID)) {
@@ -60,8 +95,8 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
         mapSporksActive[spork.nSporkID] = spork;
         sporkManager.Relay(spork);
 
-        //does a task if needed
-        ExecuteSpork(spork.nSporkID, spork.nValue);
+        // PIVX: add to spork database.
+        pSporkDB->WriteSpork(spork.nSporkID, spork);
     }
     if (strCommand == "getsporks") {
         std::map<int, CSporkMessage>::iterator it = mapSporksActive.begin();
@@ -88,12 +123,10 @@ bool IsSporkActive(int nSporkID)
         if (nSporkID == SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT) r = SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT) r = SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_10_MASTERNODE_PAY_UPDATED_NODES) r = SPORK_10_MASTERNODE_PAY_UPDATED_NODES_DEFAULT;
-        if (nSporkID == SPORK_11_RESET_BUDGET) r = SPORK_11_RESET_BUDGET_DEFAULT;
-        if (nSporkID == SPORK_12_RECONSIDER_BLOCKS) r = SPORK_12_RECONSIDER_BLOCKS_DEFAULT;
         if (nSporkID == SPORK_13_ENABLE_SUPERBLOCKS) r = SPORK_13_ENABLE_SUPERBLOCKS_DEFAULT;
         if (nSporkID == SPORK_14_NEW_PROTOCOL_ENFORCEMENT) r = SPORK_14_NEW_PROTOCOL_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) r = SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2_DEFAULT;
-        if (nSporkID == SPORK_16_MN_WINNER_MINIMUM_AGE) r = SPORK_16_MN_WINNER_MINIMUM_AGE_DEFAULT;
+        //if (nSporkID == SPORK_16_MN_WINNER_MINIMUM_AGE) r = SPORK_16_MN_WINNER_MINIMUM_AGE_DEFAULT;
         if (nSporkID == SPORK_17_MN_NETCHECK) r = SPORK_17_MN_NETCHECK_DEFAULT;
         if (nSporkID == SPORK_18_MIN_AGE_STAKE_ENFORCEMENT) r = SPORK_18_MIN_AGE_STAKE_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT) r = SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT_DEFAULT;
@@ -120,12 +153,10 @@ int64_t GetSporkValue(int nSporkID)
         if (nSporkID == SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT) r = SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT) r = SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_10_MASTERNODE_PAY_UPDATED_NODES) r = SPORK_10_MASTERNODE_PAY_UPDATED_NODES_DEFAULT;
-        if (nSporkID == SPORK_11_RESET_BUDGET) r = SPORK_11_RESET_BUDGET_DEFAULT;
-        if (nSporkID == SPORK_12_RECONSIDER_BLOCKS) r = SPORK_12_RECONSIDER_BLOCKS_DEFAULT;
         if (nSporkID == SPORK_13_ENABLE_SUPERBLOCKS) r = SPORK_13_ENABLE_SUPERBLOCKS_DEFAULT;
         if (nSporkID == SPORK_14_NEW_PROTOCOL_ENFORCEMENT) r = SPORK_14_NEW_PROTOCOL_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) r = SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2_DEFAULT;
-        if (nSporkID == SPORK_16_MN_WINNER_MINIMUM_AGE) r = SPORK_16_MN_WINNER_MINIMUM_AGE_DEFAULT;
+        //if (nSporkID == SPORK_16_MN_WINNER_MINIMUM_AGE) r = SPORK_16_MN_WINNER_MINIMUM_AGE_DEFAULT;
         if (nSporkID == SPORK_17_MN_NETCHECK) r = SPORK_17_MN_NETCHECK_DEFAULT;
         if (nSporkID == SPORK_18_MIN_AGE_STAKE_ENFORCEMENT) r = SPORK_18_MIN_AGE_STAKE_ENFORCEMENT_DEFAULT;
         if (nSporkID == SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT) r = SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT_DEFAULT;
@@ -134,20 +165,6 @@ int64_t GetSporkValue(int nSporkID)
     }
 
     return r;
-}
-
-void ExecuteSpork(int nSporkID, int nValue)
-{
-    if (nSporkID == SPORK_11_RESET_BUDGET && nValue == 1) {
-        budget.Clear();
-    }
-
-    //correct fork via spork technology
-    if (nSporkID == SPORK_12_RECONSIDER_BLOCKS && nValue > 0) {
-        LogPrintf("Spork::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
-
-        ReprocessBlocks(nValue);
-    }
 }
 
 void ReprocessBlocks(int nBlocks)
@@ -181,19 +198,17 @@ void ReprocessBlocks(int nBlocks)
     }
 }
 
-
 bool CSporkManager::CheckSignature(CSporkMessage& spork)
 {
     //note: need to investigate why this is failing
     std::string strMessage = boost::lexical_cast<std::string>(spork.nSporkID) + boost::lexical_cast<std::string>(spork.nValue) + boost::lexical_cast<std::string>(spork.nTimeSigned);
-    CPubKey pubkey(ParseHex(Params().SporkKey()));
-
+    CPubKey pubkeynew(ParseHex(Params().SporkKey()));
     std::string errorMessage = "";
-    if (!obfuScationSigner.VerifyMessage(pubkey, spork.vchSig, strMessage, errorMessage)) {
-        return false;
+    if (obfuScationSigner.VerifyMessage(pubkeynew, spork.vchSig, strMessage, errorMessage)) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool CSporkManager::Sign(CSporkMessage& spork)
@@ -271,12 +286,10 @@ int CSporkManager::GetSporkIDByName(std::string strName)
     if (strName == "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT") return SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT;
     if (strName == "SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT") return SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT;
     if (strName == "SPORK_10_MASTERNODE_PAY_UPDATED_NODES") return SPORK_10_MASTERNODE_PAY_UPDATED_NODES;
-    if (strName == "SPORK_11_RESET_BUDGET") return SPORK_11_RESET_BUDGET;
-    if (strName == "SPORK_12_RECONSIDER_BLOCKS") return SPORK_12_RECONSIDER_BLOCKS;
     if (strName == "SPORK_13_ENABLE_SUPERBLOCKS") return SPORK_13_ENABLE_SUPERBLOCKS;
     if (strName == "SPORK_14_NEW_PROTOCOL_ENFORCEMENT") return SPORK_14_NEW_PROTOCOL_ENFORCEMENT;
     if (strName == "SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2") return SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2;
-    if (strName == "SPORK_16_MN_WINNER_MINIMUM_AGE") return SPORK_16_MN_WINNER_MINIMUM_AGE;
+    //if (strName == "SPORK_16_MN_WINNER_MINIMUM_AGE") return SPORK_16_MN_WINNER_MINIMUM_AGE;
     if (strName == "SPORK_17_MN_NETCHECK") return SPORK_17_MN_NETCHECK;
     if (strName == "SPORK_18_MIN_AGE_STAKE_ENFORCEMENT") return SPORK_18_MIN_AGE_STAKE_ENFORCEMENT;
     if (strName == "SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT") return SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT;
@@ -292,12 +305,10 @@ std::string CSporkManager::GetSporkNameByID(int id)
     if (id == SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT) return "SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT";
     if (id == SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT) return "SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT";
     if (id == SPORK_10_MASTERNODE_PAY_UPDATED_NODES) return "SPORK_10_MASTERNODE_PAY_UPDATED_NODES";
-    if (id == SPORK_11_RESET_BUDGET) return "SPORK_11_RESET_BUDGET";
-    if (id == SPORK_12_RECONSIDER_BLOCKS) return "SPORK_12_RECONSIDER_BLOCKS";
     if (id == SPORK_13_ENABLE_SUPERBLOCKS) return "SPORK_13_ENABLE_SUPERBLOCKS";
     if (id == SPORK_14_NEW_PROTOCOL_ENFORCEMENT) return "SPORK_14_NEW_PROTOCOL_ENFORCEMENT";
     if (id == SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) return "SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2";
-    if (id == SPORK_16_MN_WINNER_MINIMUM_AGE) return "SPORK_16_MN_WINNER_MINIMUM_AGE";
+    //if (id == SPORK_16_MN_WINNER_MINIMUM_AGE) return "SPORK_16_MN_WINNER_MINIMUM_AGE";
     if (id == SPORK_17_MN_NETCHECK) return "SPORK_17_MN_NETCHECK";
     if (id == SPORK_18_MIN_AGE_STAKE_ENFORCEMENT) return "SPORK_18_MIN_AGE_STAKE_ENFORCEMENT";
     if (id == SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT) return "SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT";

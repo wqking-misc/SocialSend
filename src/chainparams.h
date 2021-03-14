@@ -1,5 +1,7 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
+// Copyright (c) 2014-2015 The Dash developers
+// Copyright (c) 2015-2017 The PIVX Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -140,10 +142,10 @@ protected:
     std::string strSporkKey;
     std::string strObfuscationPoolDummyAddress;
     int64_t nStartMasternodePayments;
-    int64_t nBudget_Fee_Confirmations;
     int nNewMasternodeReward_StartBlock;
     int nNewMasternodeReward_Collateral;
     double nNewMasternodeReward_MNPercent;
+    int64_t nBudget_Fee_Confirmations;
 };
 
 /**
