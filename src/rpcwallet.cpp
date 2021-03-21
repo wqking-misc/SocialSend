@@ -1096,7 +1096,7 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts)
                 item.nAmount += nAmount;
                 item.nConf = min(item.nConf, nConf);
             } else {
-                Object obj;
+                UniValue obj(UniValue::VOBJ);
                 obj.push_back(Pair("address", address.ToString()));
                 obj.push_back(Pair("account", strAccount));
                 obj.push_back(Pair("amount", ValueFromAmount(nAmount)));
@@ -2405,3 +2405,4 @@ UniValue multisend(const UniValue& params, bool fHelp)
         }
     }
     return printMultiSend();
+}

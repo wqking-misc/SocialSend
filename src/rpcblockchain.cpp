@@ -21,10 +21,6 @@
 #include <stdint.h>
 #include <univalue.h>
 
-
-#include "json/json_spirit_value.h"
-
-using namespace json_spirit;
 using namespace std;
 
 extern void TxToJSON(const CTransaction& tx, const uint256 hashBlock, UniValue& entry);
@@ -75,7 +71,6 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex)
     result.push_back(Pair("bits", strprintf("%08x", blockindex->nBits)));
     result.push_back(Pair("difficulty", GetDifficulty(blockindex)));
     result.push_back(Pair("chainwork", blockindex->nChainWork.GetHex()));
-    result.push_back(Pair("acc_checkpoint", blockindex->nAccumulatorCheckpoint.GetHex()));
 
     if (blockindex->pprev)
         result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
@@ -87,7 +82,7 @@ UniValue blockheaderToJSON(const CBlockIndex* blockindex)
 
 UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool txDetails = false)
 {
-    Object result;
+    UniValue result(UniValue::VOBJ);
     int64_t MNPayment = GetMasternodePayment(blockindex->nHeight, GetBlockValue(blockindex->nHeight));
     int64_t StakerPayment = blockindex->nMint - MNPayment;
     double MNRewardPercent = floor(((double)MNPayment / (double)blockindex->nMint) * 100);
@@ -102,7 +97,7 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
     result.push_back(Pair("height", blockindex->nHeight));
     result.push_back(Pair("version", block.nVersion));
     result.push_back(Pair("merkleroot", block.hashMerkleRoot.GetHex()));
-    Array txs;
+    UniValue txs(UniValue::VARR);
     BOOST_FOREACH (const CTransaction& tx, block.vtx) {
         if (txDetails) {
             UniValue objTx(UniValue::VOBJ);
@@ -140,9 +135,9 @@ UniValue blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool tx
 }
 
 
-Object blockHeaderToJSON(const CBlock& block, const CBlockIndex* blockindex)
+UniValue blockHeaderToJSON(const CBlock& block, const CBlockIndex* blockindex)
 {
-    Object result;
+    UniValue result(UniValue::VOBJ);
     result.push_back(Pair("version", block.nVersion));
     if (blockindex->pprev)
         result.push_back(Pair("previousblockhash", blockindex->pprev->GetBlockHash().GetHex()));
@@ -551,7 +546,7 @@ UniValue verifychain(const UniValue& params, bool fHelp)
 }
 
 /** Implementation of IsSuperMajority with better feedback */
-static Value SoftForkMajorityDesc(int minVersion, CBlockIndex* pindex, int nRequired)
+static UniValue SoftForkMajorityDesc(int minVersion, CBlockIndex* pindex, int nRequired)
 {
     int nFound = 0;
     CBlockIndex* pstart = pindex;
@@ -561,7 +556,7 @@ static Value SoftForkMajorityDesc(int minVersion, CBlockIndex* pindex, int nRequ
             ++nFound;
         pstart = pstart->pprev;
     }
-    Object rv;
+    UniValue rv(UniValue::VOBJ);
     rv.push_back(Pair("status", nFound >= nRequired));
     rv.push_back(Pair("found", nFound));
     rv.push_back(Pair("required", nRequired));
@@ -569,9 +564,9 @@ static Value SoftForkMajorityDesc(int minVersion, CBlockIndex* pindex, int nRequ
     return rv;
 }
 
-static Value SoftForkDesc(const std::string &name, int version, CBlockIndex* pindex)
+static UniValue SoftForkDesc(const std::string &name, int version, CBlockIndex* pindex)
 {
-    Object rv;
+    UniValue rv(UniValue::VOBJ);
     rv.push_back(Pair("id", name));
     rv.push_back(Pair("version", version));
     rv.push_back(Pair("enforce", SoftForkMajorityDesc(version, pindex, Params().EnforceBlockUpgradeMajority())));
@@ -579,7 +574,7 @@ static Value SoftForkDesc(const std::string &name, int version, CBlockIndex* pin
     return rv;
 }
 
-Value getblockchaininfo(const Array& params, bool fHelp)
+UniValue getblockchaininfo(const UniValue& params, bool fHelp)
 {
     int newBlockVersion = 5; // SoftFork Ver for BIP65
 
@@ -615,7 +610,7 @@ Value getblockchaininfo(const Array& params, bool fHelp)
 
     LOCK(cs_main);
 
-    Object obj;
+    UniValue obj(UniValue::VOBJ);
     obj.push_back(Pair("chain", Params().NetworkIDString()));
     obj.push_back(Pair("blocks", (int)chainActive.Height()));
     obj.push_back(Pair("headers", pindexBestHeader ? pindexBestHeader->nHeight : -1));
@@ -624,7 +619,7 @@ Value getblockchaininfo(const Array& params, bool fHelp)
     obj.push_back(Pair("verificationprogress", Checkpoints::GuessVerificationProgress(chainActive.Tip())));
     obj.push_back(Pair("chainwork", chainActive.Tip()->nChainWork.GetHex()));
     CBlockIndex* tip = chainActive.Tip();
-    Array softforks;
+    UniValue softforks(UniValue::VARR);
     softforks.push_back(SoftForkDesc("bip65", newBlockVersion, tip));
     obj.push_back(Pair("softforks", softforks));
     return obj;
@@ -773,11 +768,6 @@ UniValue getfeeinfo(const UniValue& params, bool fHelp)
                 continue;
 
             for (unsigned int j = 0; j < tx.vin.size(); j++) {
-                if (tx.vin[j].scriptSig.IsZerocoinSpend()) {
-                    nValueIn += tx.vin[j].nSequence * COIN;
-                    continue;
-                }
-
                 COutPoint prevout = tx.vin[j].prevout;
                 CTransaction txPrev;
                 uint256 hashBlock;
@@ -911,31 +901,3 @@ UniValue reconsiderblock(const UniValue& params, bool fHelp)
     return NullUniValue;
 }
 
-UniValue findserial(const UniValue& params, bool fHelp)
-{
-    if(fHelp || params.size() != 1)
-        throw runtime_error(
-            "findserial \"serial\"\n"
-                "\nSearches the zerocoin database for a zerocoin spend transaction that contains the specified serial\n"
-                "\nArguments:\n"
-                "1. serial   (string, required) the serial of a zerocoin spend to search for.\n"
-                "\nResult:\n"
-                "{\n"
-                "  \"success\": true/false        (boolean) Whether the serial was found\n"
-                "  \"txid\": xxxxx                (numeric) The transaction that contains the spent serial\n"
-                "}\n"
-                "\nExamples:\n" +
-            HelpExampleCli("findserial", "\"serial\"") + HelpExampleRpc("findserial", "\"serial\""));
-
-    std::string strSerial = params[0].get_str();
-    CBigNum bnSerial(strSerial);
-
-    uint256 txid = 0;
-    bool fSuccess = zerocoinDB->ReadCoinSpend(bnSerial, txid);
-
-    UniValue ret(UniValue::VOBJ);
-    ret.push_back(Pair("success", fSuccess));
-    ret.push_back(Pair("txid", txid.GetHex()));
-
-    return ret;
-}

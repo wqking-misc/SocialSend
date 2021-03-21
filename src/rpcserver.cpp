@@ -296,7 +296,6 @@ static const CRPCCommand vRPCCommands[] =
         {"network", "clearbanned", &clearbanned, true, false, false},
 
         /* Block chain and UTXO */
-        {"blockchain", "findserial", &findserial, true, false, false},
         {"blockchain", "getblockchaininfo", &getblockchaininfo, true, false, false},
         {"blockchain", "getbestblockhash", &getbestblockhash, true, false, false},
         {"blockchain", "getblockcount", &getblockcount, true, false, false},
@@ -362,9 +361,6 @@ static const CRPCCommand vRPCCommands[] =
         {"send", "getmasternodestatus", &getmasternodestatus, true, true, false},
         {"send", "getmasternodewinners", &getmasternodewinners, true, true, false},
         {"send", "getmasternodescores", &getmasternodescores, true, true, false},
-        {"send", "initmasternode", &initmasternode, true, true, false},
-        {"send", "masternodeisinit", &masternodeisinit, true, true, false},
-        {"send", "killmasternode", &killmasternode, true, true, false},
         {"send", "mnbudget", &mnbudget, true, true, false},
         {"send", "preparebudget", &preparebudget, true, true, false},
         {"send", "submitbudget", &submitbudget, true, true, false},

@@ -1043,3 +1043,4 @@ UniValue checkbudgets(const UniValue& params, bool fHelp)
     budget.CheckAndRemove();
 
     return NullUniValue;
+}
