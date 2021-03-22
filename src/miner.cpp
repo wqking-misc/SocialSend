@@ -124,7 +124,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         }
     }
     // Decide whether to include witness transactions (temporary)
-    bool fIncludeWitness = IsSporkActive(SPORK_17_SEGWIT_ACTIVATION);
+    bool fIncludeWitness = IsSporkActive(SPORK_16_SEGWIT_ACTIVATION);
 
     // Create coinbase tx
     CMutableTransaction txNew;
