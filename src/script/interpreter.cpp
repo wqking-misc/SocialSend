@@ -1129,6 +1129,42 @@ bool TransactionSignatureChecker::CheckSig(const vector<unsigned char>& vchSigIn
     return true;
 }
 
+bool TransactionSignatureChecker::CheckLockTime(const CScriptNum& nLockTime) const
+{
+    // There are two times of nLockTime: lock-by-blockheight
+    // and lock-by-blocktime, distinguished by whether
+    // nLockTime < LOCKTIME_THRESHOLD.
+    //
+    // We want to compare apples to apples, so fail the script
+    // unless the type of nLockTime being tested is the same as
+    // the nLockTime in the transaction.
+    if (!(
+        (txTo->nLockTime <  LOCKTIME_THRESHOLD && nLockTime <  LOCKTIME_THRESHOLD) ||
+        (txTo->nLockTime >= LOCKTIME_THRESHOLD && nLockTime >= LOCKTIME_THRESHOLD)
+    ))
+        return false;
+
+    // Now that we know we're comparing apples-to-apples, the
+    // comparison is a simple numeric one.
+    if (nLockTime > (int64_t)txTo->nLockTime)
+        return false;
+
+    // Finally the nLockTime feature can be disabled and thus
+    // CHECKLOCKTIMEVERIFY bypassed if every txin has been
+    // finalized by setting nSequence to maxint. The
+    // transaction would be allowed into the blockchain, making
+    // the opcode ineffective.
+    //
+    // Testing if this vin is not final is sufficient to
+    // prevent this condition. Alternatively we could test all
+    // inputs, but testing just this input minimizes the data
+    // required to prove correct CHECKLOCKTIMEVERIFY execution.
+    if (txTo->vin[nIn].IsFinal())
+        return false;
+
+    return true;
+}
+
 static bool VerifyWitnessProgram(const CScriptWitness& witness, int witversion, const std::vector<unsigned char>& program, unsigned int flags, const BaseSignatureChecker& checker, ScriptError* serror)
 {
     vector<vector<unsigned char> > stack;

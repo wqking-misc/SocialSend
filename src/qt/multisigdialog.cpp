@@ -671,7 +671,9 @@ bool MultisigDialog::signMultisigTx(CMutableTransaction& tx, string& errorOut, Q
             //merge in any previous signatures
             txin.scriptSig = CombineSignatures(prevPubKey, tx, nIn, txin.scriptSig, oldVin[nIn].scriptSig);
 
-            if (!VerifyScript(txin.scriptSig, prevPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, nIn))){
+            const CScriptWitness *witness = (nIn < tx.wit.vtxinwit.size()) ? &tx.wit.vtxinwit[nIn].scriptWitness : NULL;
+
+            if (!VerifyScript(txin.scriptSig, prevPubKey, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, nIn))){
                 fComplete = false;
             }
             nIn++;
@@ -700,10 +702,12 @@ bool MultisigDialog::isFullyVerified(CMutableTransaction& tx){
                 throw runtime_error("txin is unconfirmed");
             }
 
+            const CScriptWitness *witness = (nIn < tx.wit.vtxinwit.size()) ? &tx.wit.vtxinwit[nIn].scriptWitness : NULL;
+
             //get pubkey from this input as output in last tx
             CScript prevPubKey = txVin.vout[txin.prevout.n].scriptPubKey;
 
-            if (!VerifyScript(txin.scriptSig, prevPubKey, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, nIn))){
+            if (!VerifyScript(txin.scriptSig, prevPubKey, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, nIn))){
                 return false;
             }
 
