@@ -672,7 +672,7 @@ bool MultisigDialog::signMultisigTx(CMutableTransaction& tx, string& errorOut, Q
             SignSignature(keystore, prevPubKey, tx, nIn);
 
             //merge in any previous signatures
-            txin.scriptSig = CombineSignatures(prevPubKey, tx, nIn, txin.scriptSig, oldVin[nIn].scriptSig);
+            txin.scriptSig = CombineSignatures(prevPubKey, tx, nIn, amount, txin.scriptSig, oldVin[nIn].scriptSig);
 
             const CScriptWitness *witness = (nIn < tx.wit.vtxinwit.size()) ? &tx.wit.vtxinwit[nIn].scriptWitness : NULL;
 
