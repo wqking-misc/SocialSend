@@ -663,6 +663,8 @@ bool MultisigDialog::signMultisigTx(CMutableTransaction& tx, string& errorOut, Q
             if (hashBlock == 0)
                 throw runtime_error("txin is unconfirmed");
 
+            const CAmount& amount = txVin.vout[txin.prevout.n].nValue;
+
             txin.scriptSig.clear();
             CScript prevPubKey = txVin.vout[txin.prevout.n].scriptPubKey;
 
@@ -674,7 +676,7 @@ bool MultisigDialog::signMultisigTx(CMutableTransaction& tx, string& errorOut, Q
 
             const CScriptWitness *witness = (nIn < tx.wit.vtxinwit.size()) ? &tx.wit.vtxinwit[nIn].scriptWitness : NULL;
 
-            if (!VerifyScript(txin.scriptSig, prevPubKey, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, nIn))){
+            if (!VerifyScript(txin.scriptSig, prevPubKey, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, nIn, amount))){
                 fComplete = false;
             }
             nIn++;
@@ -703,12 +705,13 @@ bool MultisigDialog::isFullyVerified(CMutableTransaction& tx){
                 throw runtime_error("txin is unconfirmed");
             }
 
+            const CAmount& amount = txVin.vout[txin.prevout.n].nValue;
             const CScriptWitness *witness = (nIn < tx.wit.vtxinwit.size()) ? &tx.wit.vtxinwit[nIn].scriptWitness : NULL;
 
             //get pubkey from this input as output in last tx
             CScript prevPubKey = txVin.vout[txin.prevout.n].scriptPubKey;
 
-            if (!VerifyScript(txin.scriptSig, prevPubKey, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, nIn))){
+            if (!VerifyScript(txin.scriptSig, prevPubKey, witness, STANDARD_SCRIPT_VERIFY_FLAGS, MutableTransactionSignatureChecker(&tx, nIn, amount))){
                 return false;
             }
 
