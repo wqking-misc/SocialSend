@@ -26,6 +26,7 @@
 #include "masternode-payments.h"
 
 #include "spork.h"        //For SPORK check
+#include "bignum.h"
 
 #include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -113,6 +114,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     if (Params().MineBlocksOnDemand())
         pblock->nVersion = GetArg("-blockversion", pblock->nVersion);
 
+    // Decide whether to include witness transactions (temporary)
+    bool fIncludeWitness = IsSporkActive(SPORK_16_SEGWIT_ACTIVATION);
+
     if (fProofOfStake) {
         CBlockIndex* pindexPrev = chainActive.Tip();
         bool bIsSporkAct = IsSporkActive(SPORK_19_CLTV_BLOCK_VOTE_ENFORCEMENT);
@@ -124,8 +128,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             pblock->nVersion = 4;
         }
     }
-    // Decide whether to include witness transactions (temporary)
-    bool fIncludeWitness = IsSporkActive(SPORK_16_SEGWIT_ACTIVATION);
 
     // Create coinbase tx
     CMutableTransaction txNew;
@@ -133,10 +135,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     txNew.vin[0].prevout.SetNull();
     txNew.vout.resize(1);
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-
-    CBlockIndex* prev = chainActive.Tip();
-    txNew.vout[0].nValue = GetBlockValue(prev->nHeight);
-
     pblock->vtx.push_back(txNew);
     pblocktemplate->vTxFees.push_back(-1);   // updated at end
     pblocktemplate->vTxSigOpsCost.push_back(-1); // updated at end
@@ -144,13 +142,12 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     // ppcoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
-    CMutableTransaction txCoinStake;
-
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
         pblock->nTime = GetAdjustedTime();
         CBlockIndex* pindexPrev = chainActive.Tip();
         pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+        CMutableTransaction txCoinStake;
         int64_t nSearchTime = pblock->nTime; // search to current time
         bool fStakeFound = false;
         if (nSearchTime >= nLastCoinStakeSearchTime) {
@@ -207,8 +204,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         for (map<uint256, CTxMemPoolEntry>::iterator mi = mempool.mapTx.begin();
              mi != mempool.mapTx.end(); ++mi) {
             const CTransaction& tx = mi->second.GetTx();
-            if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight))
+            if (tx.IsCoinBase() || tx.IsCoinStake() || !IsFinalTx(tx, nHeight)){
                 continue;
+            }
 
             COrphan* porphan = NULL;
             double dPriority = 0;
@@ -250,6 +248,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                     nTotalIn += mempool.mapTx[txin.prevout.hash].GetTx().vout[txin.prevout.n].nValue;
                     continue;
                 }
+
                 const CCoins* coins = view.AccessCoins(txin.prevout.hash);
                 assert(coins);
 
@@ -277,9 +276,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             if (porphan) {
                 porphan->dPriority = dPriority;
                 porphan->feeRate = feeRate;
-            } else {
+            } else
                 vecPriority.push_back(TxPriority(dPriority, feeRate, &mi->second.GetTx()));
-            }
         }
 
         // Collect transactions into block
@@ -290,6 +288,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         TxPriorityCompare comparer(fSortedByFee);
         std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
+        vector<CBigNum> vBlockSerials;
+        vector<CBigNum> vTxSerials;
         while (!vecPriority.empty()) {
             // Take highest priority transaction off the priority queue:
             double dPriority = vecPriority.front().get<0>();
@@ -331,13 +331,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
             CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
 
-                //This zPhr serial has already been included in the block, do not add this tx.
-                if (fDoubleSerial)
-                    continue;
-            }
-
-            CAmount nTxFees = view.GetValueIn(tx) - tx.GetValueOut();
-
             // Note that flags: we don't want to set mempool/IsStandard()
             // policy here, but we still have to ensure that the block we
             // create only contains transactions that are valid in new blocks.
@@ -354,6 +347,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             nBlockCost += nTxCost;
             ++nBlockTx;
             nFees += nTxFees;
+
+            for (const CBigNum bnSerial : vTxSerials)
+                vBlockSerials.emplace_back(bnSerial);
 
             if (fPrintPriority) {
                 LogPrintf("priority %.1f fee %s txid %s\n",
@@ -389,7 +385,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         LogPrintf("CreateNewBlock(): total size %u txs: %u fees: %ld sigopscost %d\n", nBlockCost, nBlockTx, nFees, nBlockSigOpsCost);
 
         // Compute final coinbase transaction.
-        pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
         if (!fProofOfStake) {
             pblock->vtx[0] = txNew;
             pblocktemplate->vTxFees[0] = -nFees;
@@ -403,6 +398,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             UpdateTime(pblock, pindexPrev);
         pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
         pblock->nNonce = 0;
+        uint256 nCheckpoint = 0;
         pblocktemplate->vTxSigOpsCost[0] = WITNESS_SCALE_FACTOR * GetLegacySigOpCount(pblock->vtx[0]);
 
         CValidationState state;
