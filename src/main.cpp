@@ -33,6 +33,7 @@
 #include "util.h"
 #include "utilmoneystr.h"
 #include "validationinterface.h"
+#include "bignum.h"
 
 #include <sstream>
 
@@ -3874,6 +3875,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
     for (const CTransaction& tx : block.vtx) {
         if (!CheckTransaction(tx, false, false, state, GetSporkValue(SPORK_16_SEGWIT_ACTIVATION) < block.nTime))
             return error("CheckBlock() : CheckTransaction failed");
+    }
 
     unsigned int nSigOps = 0;
     BOOST_FOREACH (const CTransaction& tx, block.vtx) {
