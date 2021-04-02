@@ -1020,7 +1020,7 @@ UniValue addwitnessaddress(const UniValue& params, bool fHelp)
         throw runtime_error(msg);
     }
 
-    if (!IsSporkActive(SPORK_17_SEGWIT_ACTIVATION)) {
+    if (!IsSporkActive(SPORK_16_SEGWIT_ACTIVATION)) {
         throw JSONRPCError(RPC_WALLET_ERROR, "Segregated witness not enabled on network");
     }
 

@@ -354,6 +354,7 @@ libbitcoin_util_a_SOURCES = \
   utilstrencodings.cpp \
   utilmoneystr.cpp \
   utiltime.cpp \
+  crypto/sha512.cpp \
   $(BITCOIN_CORE_H)
 
 if GLIBC_BACK_COMPAT
