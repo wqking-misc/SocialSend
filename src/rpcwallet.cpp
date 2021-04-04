@@ -229,7 +229,7 @@ UniValue setaccount(const UniValue& params, bool fHelp)
 
 	// DS: setaccount returns an error if the address isn't in your wallet and wont create a new address
     // Check if the address is in your wallet
-    if (!pwalletMain->mapAddressBook.count(address.Get()))
+    if (!pwalletMain->mapAddressBook.count(address))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid send address");
 
     // Only add the account if the address is yours.
@@ -1136,7 +1136,8 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts)
         map<CTxDestination, tallyitem>::iterator it = mapTally.find(address);
         if (it == mapTally.end() && !fIncludeEmpty)
             continue;
-		CAmount nAmount = 0;
+
+        CAmount nAmount = 0;
         int nConf = std::numeric_limits<int>::max();
         int nBCConf = std::numeric_limits<int>::max();
         bool fIsWatchonly = false;
@@ -1170,35 +1171,6 @@ UniValue ListReceived(const UniValue& params, bool fByAccounts)
             }
             obj.push_back(Pair("txids", transactions));
             ret.push_back(obj);
-        }
-    }
-    // DS: RPC ListReceived will return change addresses not in the address book
-    // Add addresses from mapTally (this will include change addresses which aren't in the address book)
-    BOOST_FOREACH (const PAIRTYPE(CBitcoinAddress, tallyitem) & item, mapTally) {
-        const CBitcoinAddress& address = item.first;
-        const string& strAccount = "(change)";
-        map<CTxDestination, CAddressBookData>::iterator mi = pwalletMain->mapAddressBook.find(address.Get());
-        if (mi == pwalletMain->mapAddressBook.end()) {
-            if (!IsMine(*pwalletMain, address.Get()))
-                continue;
-            int64_t nAmount = 0;
-            int nConf = std::numeric_limits<int>::max();
-            nAmount = item.second.nAmount;
-            nConf = item.second.nConf;
-            if (!fIncludeEmpty && nAmount == 0)
-                continue;
-            if (fByAccounts) {
-                tallyitem& item = mapAccountTally[strAccount];
-                item.nAmount += nAmount;
-                item.nConf = min(item.nConf, nConf);
-            } else {
-                UniValue obj(UniValue::VOBJ);
-                obj.push_back(Pair("address", address.ToString()));
-                obj.push_back(Pair("account", strAccount));
-                obj.push_back(Pair("amount", ValueFromAmount(nAmount)));
-                obj.push_back(Pair("confirmations", (nConf == std::numeric_limits<int>::max() ? 0 : nConf)));
-                ret.push_back(obj);
-            }
         }
     }
 
