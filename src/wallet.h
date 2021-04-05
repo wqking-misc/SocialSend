@@ -22,8 +22,6 @@
 #include "validationinterface.h"
 #include "wallet_ismine.h"
 #include "walletdb.h"
-#include "zphrtracker.h"
-#include "zphrwallet.h"
 
 #include <algorithm>
 #include <map>
@@ -218,8 +216,6 @@ public:
      *      strWalletFile (immutable after instantiation)
      */
     mutable CCriticalSection cs_wallet;
-
-    CzPHRWallet* zwalletMain;
 
     bool fFileBacked;
     bool fWalletUnlockAnonymizeOnly;
@@ -431,6 +427,8 @@ public:
      * This function will automatically add the necessary scripts to the wallet.
      */
     CTxDestination AddAndGetDestinationForScript(const CScript& script, OutputType);
+
+    string GetUniqueWalletBackupName() const;
 
     /**
      * Increment the next transaction order id
