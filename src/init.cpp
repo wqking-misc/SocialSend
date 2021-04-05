@@ -1116,7 +1116,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
             filesystem::path blocksDir = GetDataDir() / "blocks";
             filesystem::path chainstateDir = GetDataDir() / "chainstate";
             filesystem::path sporksDir = GetDataDir() / "sporks";
-            filesystem::path zerocoinDir = GetDataDir() / "zerocoin";
             
             LogPrintf("Deleting blockchain folders blocks, chainstate, sporks and zerocoin\n");
             // We delete in 4 individual steps in case one of the folder is missing already
@@ -1134,11 +1133,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
                 if (filesystem::exists(sporksDir)){
                     boost::filesystem::remove_all(sporksDir);
                     LogPrintf("-resync: folder deleted: %s\n", sporksDir.string().c_str());
-                }
-
-                if (filesystem::exists(zerocoinDir)){
-                    boost::filesystem::remove_all(zerocoinDir);
-                    LogPrintf("-resync: folder deleted: %s\n", zerocoinDir.string().c_str());
                 }
             } catch (boost::filesystem::filesystem_error& error) {
                 LogPrintf("Failed to delete blockchain folders %s\n", error.what());
@@ -1417,61 +1411,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
                 //    break;
                 //}
 
-                if (GetBoolArg("-reindexzerocoin", false)) {
-                    uiInterface.InitMessage(_("Reindexing zerocoin database..."));
-                    if (!zerocoinDB->WipeCoins("spends") || !zerocoinDB->WipeCoins("mints")) {
-                        strLoadError = _("Failed to wipe zerocoinDB");
-                        break;
-                    }
-
-                    CBlockIndex* pindex = chainActive[Params().Zerocoin_StartHeight()];
-                    while (pindex) {
-                        if (pindex->nHeight % 1000 == 0)
-                            LogPrintf("Reindexing zerocoin : block %d...\n", pindex->nHeight);
-
-                        CBlock block;
-                        if (!ReadBlockFromDisk(block, pindex)) {
-                            strLoadError = _("Reindexing zerocoin failed");
-                            break;
-                        }
-
-                        for (const CTransaction& tx : block.vtx) {
-                            for (unsigned int i = 0; i < tx.vin.size(); i++) {
-                                if (tx.IsCoinBase())
-                                    break;
-
-                                if (tx.ContainsZerocoins()) {
-                                    uint256 txid = tx.GetHash();
-                                    //Record Serials
-                                    if (tx.IsZerocoinSpend()) {
-                                        for (auto& in : tx.vin) {
-                                            if (!in.scriptSig.IsZerocoinSpend())
-                                                continue;
-
-                                            libzerocoin::CoinSpend spend = TxInToZerocoinSpend(in);
-                                            zerocoinDB->WriteCoinSpend(spend.getCoinSerialNumber(), txid);
-                                        }
-                                    }
-
-                                    //Record mints
-                                    if (tx.IsZerocoinMint()) {
-                                        for (auto& out : tx.vout) {
-                                            if (!out.IsZerocoinMint())
-                                                continue;
-
-                                            CValidationState state;
-                                            libzerocoin::PublicCoin coin(Params().Zerocoin_Params(pindex->nHeight < Params().Zerocoin_Block_V2_Start()));
-                                            TxOutToPublicCoin(out, coin, state);
-                                            zerocoinDB->WriteCoinMint(coin, txid);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        pindex = chainActive.Next(pindex);
-                    }
-                }
-
                 // Recalculate money supply for blocks that are impacted by accounting issue after zerocoin activation
                 if (GetBoolArg("-reindexmoneysupply", false)) {
                     RecalculatePHRSupply(1);
@@ -1546,7 +1485,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
 #ifdef ENABLE_WALLET
     if (fDisableWallet) {
         pwalletMain = NULL;
-        zwalletMain = NULL;
         LogPrintf("Wallet disabled!\n");
     } else {
         // needed to restore wallet transaction meta data after -zapwallettxes
@@ -1619,9 +1557,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
         LogPrintf("%s", strErrors.str());
         LogPrintf(" wallet      %15dms\n", GetTimeMillis() - nStart);
 
-        zwalletMain = new CzPHRWallet(pwalletMain->strWalletFile);
-        pwalletMain->setZWallet(zwalletMain);
-
         RegisterValidationInterface(pwalletMain);
 
         CBlockIndex* pindexRescan = chainActive.Tip();
@@ -1675,10 +1610,6 @@ bool AppInit2(boost::thread_group& threadGroup, CScheduler& scheduler)
         if (g_change_type == OUTPUT_TYPE_NONE) {
             return InitError(strprintf(_("Unknown change type '%s'"), GetArg("-changetype", "")));
         }
-
-        pwalletMain->zphrTracker->Init();
-        zwalletMain->LoadMintPoolFromDB();
-        zwalletMain->SyncWithChain();
     }  // (!fDisableWallet)
 #else  // ENABLE_WALLET
     LogPrintf("No wallet compiled in!\n");
