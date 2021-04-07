@@ -145,7 +145,7 @@ protected:
     int nNewMasternodeReward_StartBlock;
     int nNewMasternodeReward_Collateral;
     double nNewMasternodeReward_MNPercent;
-    int64_t nBudget_Fee_Confirmations;
+    int64_t nBudgetFeeConfirmations;
 };
 
 /**
