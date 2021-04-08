@@ -910,7 +910,7 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
             CKeyID* keyid = boost::get<CKeyID>(&addr);
 
             if (!keyid) {
-                ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Phore address"));
+                ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid SEND address"));
                 return;
             }
             

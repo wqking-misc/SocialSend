@@ -329,7 +329,7 @@ UniValue listunspent(const UniValue& params, bool fHelp)
         for (unsigned int inx = 0; inx < inputs.size(); inx++) {
             const UniValue& input = inputs[inx];
             if (!IsValidDestinationString(input.get_str()))
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Phore address: ") + input.get_str());
+                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid SEND address: ") + input.get_str());
             
             CTxDestination address = DecodeDestination(input.get_str());
             if (setAddress.count(address))
@@ -454,7 +454,7 @@ UniValue createrawtransaction(const UniValue& params, bool fHelp)
     vector<string> addrList = sendTo.getKeys();
     BOOST_FOREACH(const string& name_, addrList) {
         if (!IsValidDestinationString(name_))
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Phore address: ")+name_);
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid SEND address: ")+name_);
         
         CTxDestination address = DecodeDestination(name_);
 

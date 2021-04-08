@@ -191,7 +191,7 @@ UniValue getrawchangeaddress(const UniValue& params, bool fHelp)
     if (fHelp || params.size() > 1)
         throw runtime_error(
             "getrawchangeaddress ( \"address_type\" )\n"
-            "\nReturns a new Phore address, for receiving change.\n"
+            "\nReturns a new SEND address, for receiving change.\n"
             "This is for use with raw transactions, NOT normal use.\n"
             "\nArguments:\n"
             "1. \"address_type\"           (string, optional) The address type to use. Options are \"legacy\", \"p2sh\", and \"bech32\". Default is set by -changetype.\n"
@@ -242,7 +242,7 @@ UniValue setaccount(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (!IsValidDestinationString(params[0].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
 
     CTxDestination address = DecodeDestination(params[0].get_str());
 
@@ -287,7 +287,7 @@ UniValue getaccount(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (!IsValidDestinationString(params[0].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
 
     CTxDestination address = DecodeDestination(params[0].get_str());
 
@@ -385,7 +385,7 @@ UniValue sendtoaddress(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (!IsValidDestinationString(params[0].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
     
     CTxDestination address = DecodeDestination(params[0].get_str());
 
@@ -429,7 +429,7 @@ UniValue sendtoaddressix(const UniValue& params, bool fHelp)
     LOCK2(cs_main, pwalletMain->cs_wallet);
 
     if (!IsValidDestinationString(params[0].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
 
     CTxDestination address = DecodeDestination(params[0].get_str());
 
@@ -564,9 +564,9 @@ UniValue getreceivedbyaddress(const UniValue& params, bool fHelp)
 
     LOCK2(cs_main, pwalletMain->cs_wallet);
     
-    // phore address
+    // SEND address
     if (!IsValidDestinationString(params[0].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
 
     CTxDestination address = DecodeDestination(params[0].get_str());
     CScript scriptPubKey = GetScriptForDestination(address);
@@ -850,7 +850,7 @@ UniValue sendfrom(const UniValue& params, bool fHelp)
 
     string strAccount = AccountFromValue(params[0]);
     if (!IsValidDestinationString(params[1].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
 
     CTxDestination address = DecodeDestination(params[1].get_str());
     CAmount nAmount = AmountFromValue(params[2]);
@@ -923,7 +923,7 @@ UniValue sendmany(const UniValue& params, bool fHelp)
     vector<string> keys = sendTo.getKeys();
     BOOST_FOREACH(const string& name_, keys) {
         if (!IsValidDestinationString(name_))
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid Phore address: ")+name_);
+            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, string("Invalid SEND address: ")+name_);
         
         CTxDestination address = DecodeDestination(name_);
 

@@ -143,7 +143,7 @@ QList<TransactionRecord> TransactionRecord::decomposeTransaction(const CWallet* 
                 sub.type = TransactionRecord::Obfuscated;
                 CTxDestination address;
                 if (ExtractDestination(wtx.vout[0].scriptPubKey, address)) {
-                    // Sent to Phore Address
+                    // Sent to SEND Address
                     sub.address = EncodeDestination(address);
                 } else {
                     // Sent to IP, or other non-address transaction like OP_EVAL

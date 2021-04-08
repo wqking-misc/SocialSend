@@ -208,11 +208,11 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
         throw runtime_error("Invalid ending block, starting block + (payment_cycle*payments) must be more than current height.");
 
     if (!IsValidDestinationString(params[4].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
     
     CTxDestination address = DecodeDestination(params[4].get_str());
 
-    // Parse Phore address
+    // Parse SEND address
     CScript scriptPubKey = GetScriptForDestination(address);
     CAmount nAmount = AmountFromValue(params[5]);
 
@@ -303,11 +303,11 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
         throw runtime_error("Invalid ending block, starting block + (payment_cycle*payments) must be more than current height.");
 
     if (!IsValidDestinationString(params[4].get_str()))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
 
     CTxDestination address = DecodeDestination(params[4].get_str());
 
-    // Parse Phore address
+    // Parse SEND address
     CScript scriptPubKey = GetScriptForDestination(address);
     CAmount nAmount = AmountFromValue(params[5]);
     uint256 hash = ParseHashV(params[6], "parameter 1");

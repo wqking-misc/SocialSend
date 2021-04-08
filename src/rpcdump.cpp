@@ -434,9 +434,9 @@ UniValue dumpwallet(const UniValue& params, bool fHelp)
             "dumpwallet \"filename\"\n"
             "\nThis command has been deprecated and replace with dumpallprivatekeys.\n"
             "\nSCAM WARNING: If anyone asks you to run this command and send them the file,\n"
-            "they will have FULL ACCESS to STEAL your Phore. Giving this file to someone\n"
-            "is the same thing as giving them all of the Phore in your wallet! Never send\n"
-            "this file to ANYONE that you do not trust with all of your Phore!!!\n"
+            "they will have FULL ACCESS to STEAL your SEND. Giving this file to someone\n"
+            "is the same thing as giving them all of the SEND in your wallet! Never send\n"
+            "this file to ANYONE that you do not trust with all of your SEND!!!\n"
             "\nArguments:\n"
             "1. \"filename\"    (string, required) The filename\n"
             "\nExamples:\n" +
@@ -498,9 +498,9 @@ UniValue dumpallprivatekeys(const UniValue& params, bool fHelp)
             "dumpallprivatekeys \"filename\"\n"
             "\nDumps all wallet private keys in an unencrypted, human-readable format.\n"
             "\nSCAM WARNING: If anyone asks you to run this command and send them the file,\n"
-            "they will have FULL ACCESS to STEAL your Phore. Giving this file to someone\n"
-            "is the same thing as giving them all of the Phore in your wallet! Never send\n"
-            "this file to ANYONE that you do not trust with all of your Phore!!!\n"
+            "they will have FULL ACCESS to STEAL your SEND. Giving this file to someone\n"
+            "is the same thing as giving them all of the SEND in your wallet! Never send\n"
+            "this file to ANYONE that you do not trust with all of your SEND!!!\n"
            "\nArguments:\n"
             "1. \"filename\"    (string, required) The filename\n"
             "\nExamples:\n" +
@@ -529,7 +529,7 @@ UniValue dumpallprivatekeys(const UniValue& params, bool fHelp)
     std::sort(vKeyBirth.begin(), vKeyBirth.end());
 
     // produce output
-    file << strprintf("# Wallet private key dump file created by Phore %s (%s)\n", CLIENT_BUILD, CLIENT_DATE);
+    file << strprintf("# Wallet private key dump file created by SEND %s (%s)\n", CLIENT_BUILD, CLIENT_DATE);
     file << strprintf("# * Created on %s\n", EncodeDumpTime(GetTime()));
     file << strprintf("# * Best block at time of backup was %i (%s),\n", chainActive.Height(), chainActive.Tip()->GetBlockHash().ToString());
     file << strprintf("#   mined on %s\n", EncodeDumpTime(chainActive.Tip()->GetBlockTime()));
@@ -576,7 +576,7 @@ UniValue bip38encrypt(const UniValue& params, bool fHelp)
     string strPassphrase = params[1].get_str();
 
     if (!IsValidDestinationString(strAddress))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Phore address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SEND address");
     CTxDestination address = DecodeDestination(strAddress);
     CKeyID *keyID = boost::get<CKeyID>(&address);
     if (!keyID)
