@@ -257,8 +257,8 @@ void CBudgetManager::SubmitFinalBudget(std::vector<uint256> vBudgetHash)
         Wait will we have 1 extra confirmation, otherwise some clients might reject this feeTX
         -- This function is tied to NewBlock, so we will propagate this budget while the block is also propagating
     */
-    if (conf < Params().Budget_Fee_Confirmations() + 1) {
-        LogPrint("masternode", "CBudgetManager::SubmitFinalBudget - Collateral requires at least %d confirmations - %s - %d confirmations\n", Params().Budget_Fee_Confirmations() + 1, txidCollateral.ToString(), conf);
+    if (conf < Params().BudgetFeeConfirmations() + 1) {
+        LogPrint("masternode", "CBudgetManager::SubmitFinalBudget - Collateral requires at least %d confirmations - %s - %d confirmations\n", Params().BudgetFeeConfirmations() + 1, txidCollateral.ToString(), conf);
         return;
     }
 
