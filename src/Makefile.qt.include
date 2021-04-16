@@ -97,7 +97,6 @@ QT_MOC_CPP = \
   qt/moc_peertablemodel.cpp \
   qt/moc_paymentserver.cpp \
   qt/moc_peertablemodel.cpp \
-  qt/moc_privacydialog.cpp \
   qt/moc_proposalfilterproxy.cpp \
   qt/moc_proposallist.cpp \
   qt/moc_proposaltablemodel.cpp \
@@ -182,7 +181,6 @@ BITCOIN_QT_H = \
   qt/paymentserver.h \
   qt/peertablemodel.h \
   qt/platformstyle.h \
-  qt/privacydialog.h \
   qt/proposalfilterproxy.h \
   qt/proposallist.h \
   qt/proposalrecord.h \
@@ -212,7 +210,7 @@ BITCOIN_QT_H = \
   qt/winshutdownmonitor.h
 
 RES_ICONS = \
-  qt/res/icons/notepad.png \	
+  qt/res/icons/notepad.png \
   qt/res/icons/add.png \
   qt/res/icons/address-book.png \
   qt/res/icons/address-book.svg \
@@ -267,12 +265,9 @@ RES_ICONS = \
   qt/res/icons/overview.png \
   qt/res/icons/overview.svg \
   qt/res/icons/overview_off.svg \
-  qt/res/icons/privacy.png \
-  qt/res/icons/privacy.svg \
-  qt/res/icons/privacy_off.svg \
-  qt/res/icons/proposal.png \   
-  qt/res/icons/proposal.svg \   
-  qt/res/icons/proposal_off.svg \   
+  qt/res/icons/proposal.png \
+  qt/res/icons/proposal.svg \
+  qt/res/icons/proposal_off.svg \
   qt/res/icons/qrcode.png \
   qt/res/icons/quit.png \
   qt/res/icons/receive.png \
@@ -293,7 +288,7 @@ RES_ICONS = \
   qt/res/icons/synced.svg \
   qt/res/icons/trade.png \
   qt/res/icons/transaction0.png \
-  qt/res/icons/transaction0.psv \
+  qt/res/icons/transaction0.svg \
   qt/res/icons/transaction2.png \
   qt/res/icons/transaction2.svg \
   qt/res/icons/transaction_conflicted.png \
@@ -315,10 +310,10 @@ RES_ICONS = \
   qt/res/icons/unit_tsend.svg \
   qt/res/icons/unit_tmsend.png \
   qt/res/icons/unit_tmsend.svg \
-  qt/res/icons/unit_tusend.png
-  qt/res/icons/unit_tusend.svg
+  qt/res/icons/unit_tusend.png \
+  qt/res/icons/unit_tusend.svg \
   qt/res/icons/unit_usend.png \
-  qt/res/icons/unit_usend.svg \
+  qt/res/icons/unit_usend.svg
 
 BITCOIN_QT_CPP = \
   qt/bantablemodel.cpp \
