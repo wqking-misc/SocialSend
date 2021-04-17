@@ -257,8 +257,6 @@ RES_ICONS = \
   qt/res/icons/receive.png \
   qt/res/icons/receive_off.png \
   qt/res/icons/receive_dark.png \
-  qt/res/icons/privacy.png \
-  qt/res/icons/privacy_off.png \
   qt/res/icons/remove.png \
   qt/res/icons/tx_masternode.png \
   qt/res/icons/tx_staked.png \
@@ -276,12 +274,12 @@ RES_ICONS = \
   qt/res/icons/tx_input.png \
   qt/res/icons/tx_output.png \
   qt/res/icons/tx_masternode.png \
-  qt/res/icons/unit_phore.png \
-  qt/res/icons/unit_mphore.png \
-  qt/res/icons/unit_uphore.png \
-  qt/res/icons/unit_tphore.png \
-  qt/res/icons/unit_tmphore.png \
-  qt/res/icons/unit_tuphore.png
+  qt/res/icons/unit_send.png \
+  qt/res/icons/unit_msend.png \
+  qt/res/icons/unit_usend.png \
+  qt/res/icons/unit_tsend.png \
+  qt/res/icons/unit_tmsend.png \
+  qt/res/icons/unit_tusend.png
 
 BITCOIN_QT_CPP = \
   qt/bantablemodel.cpp \
