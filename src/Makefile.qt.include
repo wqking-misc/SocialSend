@@ -53,7 +53,6 @@ QT_FORMS_UI = \
   qt/forms/budgetlistview.ui \
   qt/forms/budgetitem.ui \
   qt/forms/receivecoinsdialog.ui \
-  qt/forms/privacydialog.ui \
   qt/forms/receiverequestdialog.ui \
   qt/forms/rpcconsole.ui \
   qt/forms/sendcoinsdialog.ui \
@@ -96,6 +95,7 @@ QT_MOC_CPP = \
   qt/moc_budgetitem.cpp \
   qt/moc_peertablemodel.cpp \
   qt/moc_paymentserver.cpp \
+  qt/moc_columnalignedlayout.cpp \
   qt/moc_peertablemodel.cpp \
   qt/moc_proposalfilterproxy.cpp \
   qt/moc_proposaltablemodel.cpp \
@@ -103,7 +103,6 @@ QT_MOC_CPP = \
   qt/moc_qvalidatedlineedit.cpp \
   qt/moc_qvaluecombobox.cpp \
   qt/moc_receivecoinsdialog.cpp \
-  qt/moc_privacydialog.cpp \
   qt/moc_receiverequestdialog.cpp \
   qt/moc_recentrequeststablemodel.cpp \
   qt/moc_rpcconsole.cpp \
@@ -179,6 +178,7 @@ BITCOIN_QT_H = \
   qt/budgetitem.h \
   qt/paymentrequestplus.h \
   qt/paymentserver.h \
+  qt/columnalignedlayout.h \
   qt/peertablemodel.h \
   qt/platformstyle.h \
   qt/proposalfilterproxy.h \
@@ -190,7 +190,6 @@ BITCOIN_QT_H = \
   qt/qvalidatedlineedit.h \
   qt/qvaluecombobox.h \
   qt/receivecoinsdialog.h \
-  qt/privacydialog.h \
   qt/receiverequestdialog.h \
   qt/recentrequeststablemodel.h \
   qt/rpcconsole.h \
