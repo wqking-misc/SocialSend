@@ -1165,7 +1165,7 @@
                       <item>
                        <widget class="QCheckBox" name="checkBoxMinimumFee">
                         <property name="toolTip">
-                         <string>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for Phore transactions than the network can process.</string>
+                         <string>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for SEND transactions than the network can process.</string>
                         </property>
                         <property name="text">
                          <string/>
@@ -1178,7 +1178,7 @@
                          <bool>true</bool>
                         </property>
                         <property name="toolTip">
-                         <string>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for Phore transactions than the network can process.</string>
+                         <string>Paying only the minimum fee is just fine as long as there is less transaction volume than space in the blocks.&lt;br /&gt;But be aware that this can end up in a never confirming transaction once there is more demand for SEND transactions than the network can process.</string>
                         </property>
                         <property name="text">
                          <string>(read the tooltip)</string>
@@ -1619,7 +1619,7 @@
                 <bool>false</bool>
                </property>
                <property name="text">
-                <string>Anonymized Phore</string>
+                <string>Anonymized SEND</string>
                </property>
               </widget>
              </item>
@@ -1691,7 +1691,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../phore.qrc"/>
+  <include location="../send.qrc"/>
  </resources>
  <connections/>
  <buttongroups>

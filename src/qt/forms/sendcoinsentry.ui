@@ -76,7 +76,7 @@ background-color:transparent !important;
          <string/>
         </property>
         <property name="placeholderText">
-         <string>Enter a Phore address (e.g. PCYiHgGJJ6xGHqivmdZrYjRnhaYf6AJ2Mp)</string>
+         <string>Enter a SEND address (e.g. PCYiHgGJJ6xGHqivmdZrYjRnhaYf6AJ2Mp)</string>
         </property>
        </widget>
       </item>

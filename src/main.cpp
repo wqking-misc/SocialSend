@@ -2414,7 +2414,7 @@ void ThreadScriptCheck()
     scriptcheckqueue.Thread();
 }
 
-bool RecalculatePHRSupply(int nHeightStart)
+bool RecalculateSendSupply(int nHeightStart)
 {
     if (nHeightStart > chainActive.Height())
         return false;

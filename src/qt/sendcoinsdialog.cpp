@@ -61,7 +61,7 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent),
     connect(ui->splitBlockCheckBox, SIGNAL(stateChanged(int)), this, SLOT(splitBlockChecked(int)));
     connect(ui->splitBlockLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(splitBlockLineEditChanged(const QString&)));
 
-    // Phore specific
+    // SEND specific
     QSettings settings;
     if (!settings.contains("bUseObfuScation"))
         settings.setValue("bUseObfuScation", false);
@@ -877,14 +877,14 @@ void SendCoinsDialog::coinControlChangeEdited(const QString& text)
             ui->labelCoinControlChangeLabel->setText("");
         } else if (!IsValidDestinationString(text.toStdString())) // Invalid address
         {
-            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Phore address"));
+            ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid SEND address"));
         } else // Valid address
         {
             CTxDestination addr = DecodeDestination(text.toStdString());
             CKeyID* keyid = boost::get<CKeyID>(&addr);
 
             if (!keyid) {
-                ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid Phore address"));
+                ui->labelCoinControlChangeLabel->setText(tr("Warning: Invalid SEND address"));
                 return;
             }
             
