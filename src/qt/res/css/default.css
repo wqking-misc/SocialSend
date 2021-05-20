@@ -11,7 +11,7 @@ WalletFrame
 	margin:0;
 	padding:0;
 }
-}
+
 QStatusBar {
 background-color:#ffffff;
 }
@@ -326,7 +326,7 @@ QAbstractSpinBox::down-arrow {
 QHeaderView {
 	/* Table Header */
 	background-color: transparent;
-    outline: 0;
+	outline: 0;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -337,11 +337,11 @@ QHeaderView::section {
 	qproperty-alignment: left;
 	background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 0.25, stop: 0 #4a4a4a, stop: 1 #535353);
 	color:#fff;
-	min-height:75px;
+	min-height:25px;
 	font-weight:bold;
-	font-size:14px;
+	font-size:11px;
 	border:0;
-
+	border-right:1px solid #fff;
 	padding-left:5px;
 	padding-right:5px;
 	padding-top:2px;
@@ -380,7 +380,7 @@ QScrollArea > QWidget > QScrollBar { background: palette(base); }
 
 QTableView::item, #transactionView::item {
 	/* Table Item */
-	background-color:transparent;
+	background-color:#fcfcfc;
 	font-size:12px;
 }
 
@@ -390,20 +390,23 @@ QTableView::item:selected {
 	color:#fff;
 }
 
-QTableWidget { /* Table Background */
-background-color:red; /*#fcfcfc;*/
-border:1px solid #333;
+QTableWidget {
+	/* Table Background */
+	background-color:transparent; /*red;*/ /*#fcfcfc;*/
+	border:1px solid #333;
 }
 
-QTableWidget:focus, QTableView, QTableView:focus { /* Remove focus outline */
-outline:0;
-background:transparent;
+QTableWidget:focus, QTableView, QTableView:focus {
+	/* Remove focus outline */
+	outline:0;
+	background:transparent;
 }
 
-QTreeWidget { /* Tree Background */
-background-color:#fcfcfc;
-alternate-background-color:#f2f2f2;
-color:#333;
+QTreeWidget {
+	/* Tree Background */
+	background-color:#fcfcfc;
+	alternate-background-color:#f2f2f2;
+	color:#333;
 }
 
 QScrollBar { /* Scroll Bar */
@@ -684,9 +687,9 @@ QWidget#AddressBookPage QPushButton#newAddress {
 	color:#616161;
 	padding-left:10px;
 	padding-right:10px;
-	}
+}
 
-	QWidget#AddressBookPage QPushButton#newAddress:hover {
+QWidget#AddressBookPage QPushButton#newAddress:hover {
 	background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: .01 #f6f6f6, stop: .1 rgba(240, 240, 240, 255), stop: .95 rgba(240, 240, 240, 255), stop: 1 #ebebeb);
 	color:#333;
 }
@@ -1780,7 +1783,7 @@ QWidget#MasternodeList .QFrame#frameList {
 /********************************* CALENDAR WIDGET **************************************/
 
 QCalendarView {
-border:1px solid #333;
+	border:1px solid #333;
 }
 
 QCalendarWidget QWidget#qt_calendar_navigationbar {
