@@ -70,8 +70,6 @@ OptionsDialog::OptionsDialog(QWidget* parent, bool enableWallet) : QDialog(paren
     ui->bitcoinAtStartup->setAttribute(Qt::WA_MacShowFocusRect, 0);
     ui->databaseCache->setAttribute(Qt::WA_MacShowFocusRect, 0);
     ui->threadsScriptVerif->setAttribute(Qt::WA_MacShowFocusRect, 0);
-    ui->zeromintPercentage->setAttribute(Qt::WA_MacShowFocusRect, 0);
-    ui->preferredDenom->setAttribute(Qt::WA_MacShowFocusRect, 0);
 
     ui->spinBoxStakeSplitThreshold->setAttribute(Qt::WA_MacShowFocusRect, 0);
     ui->coinControlFeatures->setAttribute(Qt::WA_MacShowFocusRect, 0);
