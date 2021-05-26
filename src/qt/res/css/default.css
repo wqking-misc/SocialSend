@@ -1283,7 +1283,6 @@ QWidget .QFrame#frame_2 QListView {
 	//max-width:369px;
 	margin-top:12px;
 	margin-left:0px; /* CSS Voodoo - set to -66px to hide default transaction icons */
-	color:#333;
 }
 
 /**************************** SEND DIALOG ***********************************************/
