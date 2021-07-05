@@ -466,7 +466,7 @@ $(QT_QRC_LOCALE_CPP): $(QT_QRC_LOCALE) $(QT_QM)
 	@test -f $(@D)/$(<F) || cp -f $< $(@D)
 	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name send_locale $(@D)/$(<F) | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
-	@rm $(@D)/temp_$(<F)
+	@rm -f $(@D)/temp_$(<F)
 
 $(QT_QRC_CPP): $(QT_QRC) $(QT_FORMS_H) $(RES_ICONS) $(RES_IMAGES) $(RES_CSS) $(RES_MOVIES) $(RES_TEXT) $(PROTOBUF_H)
 	@test -f $(RCC)
