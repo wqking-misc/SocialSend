@@ -239,7 +239,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             double dPriority = 0;
             CAmount nTotalIn = 0;
             bool fMissingInputs = false;
-            uint256 txid = tx.GetHash();
+            //uint256 txid = tx.GetHash();
 
             // Legacy limits on sigOps:
             int64_t nTxSigOpsCost = mi->second.GetSigOpCost();

@@ -24,10 +24,6 @@
 #include <QSettings>
 #include <QTimer>
 
-#define DECORATION_SIZE 44
-#define ICON_OFFSET 16
-
-
 #define DECORATION_SIZE 48
 #define ICON_OFFSET 16
 #define NUM_ITEMS 6
@@ -326,8 +322,8 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
     if (pwalletMain) {
         nLockedBalance = pwalletMain->GetLockedCoins();
     }
-    // PHR Balance
-    CAmount nTotalBalance = balance + unconfirmedBalance;
+    // SEND Balance
+    //CAmount nTotalBalance = balance + unconfirmedBalance;
     CAmount phrAvailableBalance = balance - immatureBalance - nLockedBalance;
 
     // PHR labels

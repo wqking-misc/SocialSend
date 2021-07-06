@@ -591,7 +591,7 @@ static UniValue SoftForkDesc(const std::string &name, int version, CBlockIndex* 
 
 UniValue getblockchaininfo(const UniValue& params, bool fHelp)
 {
-    int newBlockVersion = 5; // SoftFork Ver for BIP65
+    //int newBlockVersion = 5; // SoftFork Ver for BIP65
 
     if (fHelp || params.size() != 0)
         throw runtime_error(

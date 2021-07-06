@@ -2569,7 +2569,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     CAmount nValueOut = 0;
     CAmount nValueIn = 0;
     vector<uint256> vSpendsInBlock;
-    uint256 hashBlock = block.GetHash();
+    //uint256 hashBlock = block.GetHash();
 
     unsigned int flags = SCRIPT_VERIFY_P2SH | SCRIPT_VERIFY_DERSIG;
 

@@ -2944,7 +2944,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
 
 
     //Here we remove signature, so we can sign transaction after adding user's transactions fees
-    int nHeight = chainActive.Tip()->nHeight;
+    //int nHeight = chainActive.Tip()->nHeight;
     // Sign
     int nIn = 0;
     BOOST_FOREACH (const CWalletTx* pcoin, vwtxPrev) {
